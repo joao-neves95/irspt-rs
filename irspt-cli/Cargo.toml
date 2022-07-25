@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 irspt-api = { path = "../irspt-api/" }
+anyhow = "1.0"
+tokio = "1.20.1"
