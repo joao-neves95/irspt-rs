@@ -1,12 +1,54 @@
-#[derive(Debug)]
-pub struct IrsptApiInvoices {}
+use anyhow::Result;
+use thirtyfour::By;
 
-impl IrsptApiInvoices {
+use crate::models::IssueInvoiceRequest;
+use crate::web_driver_actions::WebDriverActions;
+use crate::IrsptApi;
+
+pub struct IrsptApiInvoices<'a> {
+    irspt_api: &'a IrsptApi,
+}
+
+impl<'a> IrsptApiInvoices<'a> {
+    pub fn new(irspt_api: &'a IrsptApi) -> IrsptApiInvoices {
+        IrsptApiInvoices { irspt_api }
+    }
+
     pub fn get_reference_data() -> () {
         todo!()
     }
 
-    pub fn issue_invoice() -> () {
-        todo!()
+    pub async fn issue_invoice(&self, request_model: IssueInvoiceRequest) -> Result<()> {
+        // TODO: Un-hardcode url.
+        self.irspt_api
+            .web_driver
+            .goto(format!(
+                "https://irs.portaldasfinancas.gov.pt/recibos/portal/emitirfatura#?modoConsulta=Prestador&nifPrestadorServicos={}&isAutoSearchOn=on",
+                request_model.nif
+            ))
+            .await?;
+
+        WebDriverActions::set_input_value_by_prop_value(
+            &self.irspt_api.web_driver,
+            "name",
+            "dataPrestacao",
+            request_model.date.as_str(),
+        )
+        .await?;
+
+        WebDriverActions::select_option_prop_by_prop_value(
+            &WebDriverActions::find_elem_by_prop_value(
+                &self.irspt_api.web_driver,
+                "select",
+                "name",
+                "tipoRecibo",
+            )
+            .await?,
+            "label",
+            "Fatura-Recibo",
+        )
+        .await?;
+
+        Ok(())
     }
 }

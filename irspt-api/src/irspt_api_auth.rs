@@ -1,7 +1,7 @@
 use anyhow::{Ok, Result};
 use thirtyfour::By;
 
-use crate::IrsptApi;
+use crate::{web_driver_actions::WebDriverActions, IrsptApi};
 
 pub struct IrsptApiAuth<'a> {
     irspt_api: &'a IrsptApi,
@@ -16,21 +16,26 @@ impl<'a> IrsptApiAuth<'a> {
         // TODO: Un-hardcode url.
         self.irspt_api
             .web_driver
-            .goto("https://www.acesso.gov.pt/v2/loginForm?partID=PFAP&path=/geral/dashboard")
+            // .goto("https://www.acesso.gov.pt/v2/loginForm?partID=PFAP&path=/geral/dashboard")
+            .goto("https://www.acesso.gov.pt/v2/loginForm?partID=PFAP&path=/geral/home")
             .await?;
 
-        let username_elem = self.irspt_api.web_driver.find(By::Id("username")).await?;
-        username_elem.send_keys(username).await?;
+        WebDriverActions::set_input_value_by_id(&self.irspt_api.web_driver, "username", username)
+            .await?;
 
-        let password_elem = self
-            .irspt_api
+        WebDriverActions::set_input_value_by_id(
+            &self.irspt_api.web_driver,
+            "password-nif",
+            password,
+        )
+        .await?;
+
+        self.irspt_api
             .web_driver
-            .find(By::Id("password-nif"))
+            .find(By::Id("sbmtLogin"))
+            .await?
+            .click()
             .await?;
-        password_elem.send_keys(password).await?;
-
-        let submit_elem = self.irspt_api.web_driver.find(By::Id("sbmtLogin")).await?;
-        submit_elem.click().await?;
 
         Ok(())
     }
