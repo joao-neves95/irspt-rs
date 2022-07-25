@@ -1,4 +1,4 @@
-mod web_driver_actions;
+mod extensions;
 
 mod irspt_api;
 mod irspt_api_auth;

@@ -1,8 +1,8 @@
 use anyhow::Result;
-use thirtyfour::By;
 
+use crate::extensions::WebDriverExtensions;
+use crate::extensions::WebElementExtensions;
 use crate::models::IssueInvoiceRequest;
-use crate::web_driver_actions::WebDriverActions;
 use crate::IrsptApi;
 
 pub struct IrsptApiInvoices<'a> {
@@ -28,26 +28,23 @@ impl<'a> IrsptApiInvoices<'a> {
             ))
             .await?;
 
-        WebDriverActions::set_input_value_by_prop_value(
-            &self.irspt_api.web_driver,
-            "name",
-            "dataPrestacao",
-            request_model.date.as_str(),
-        )
-        .await?;
-
-        WebDriverActions::select_option_prop_by_prop_value(
-            &WebDriverActions::find_elem_by_prop_value(
-                &self.irspt_api.web_driver,
-                "select",
+        let _ = &self
+            .irspt_api
+            .web_driver
+            .set_input_value_by_prop_value_async(
                 "name",
-                "tipoRecibo",
+                "dataPrestacao",
+                request_model.date.as_str(),
             )
-            .await?,
-            "label",
-            "Fatura-Recibo",
-        )
-        .await?;
+            .await?;
+
+        let _ = &self
+            .irspt_api
+            .web_driver
+            .find_elem_by_prop_value_async("select", "name", "tipoRecibo")
+            .await?
+            .select_option_prop_by_prop_value_async("label", "Fatura-Recibo")
+            .await?;
 
         Ok(())
     }
