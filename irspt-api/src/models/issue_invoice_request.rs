@@ -1,8 +1,6 @@
+#[derive(Debug)]
 pub struct IssueInvoiceRequest {
-    pub nif: String,
-    // TODO: Format date to year-mm-dd
     pub date: String,
-    pub activity: String,
 
     pub client_country: String,
     pub client_nif: i16,
@@ -10,7 +8,7 @@ pub struct IssueInvoiceRequest {
     pub client_address: String,
 
     pub value: String,
-    pub iva_regime: String,
+    pub nif: String,
 }
 
 impl IssueInvoiceRequest {

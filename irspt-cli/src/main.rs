@@ -1,20 +1,37 @@
 use anyhow::Result;
-use irspt_api::{IrsptApi, IrsptApiAuth};
+use inquire::DateSelect;
+
+use irspt_api::{models::IssueInvoiceRequest, IrsptApi, IrsptApiAuth};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    println!("Hello, world!");
+    // TODO: Un-hardcode string messages.
+    // TODO: Extract the prompt into a IssueInvoiceRequest prompt builder.
+    let invoice_request = IssueInvoiceRequest {
+        date: DateSelect::new("Service date")
+            .with_week_start(chrono::Weekday::Mon)
+            .with_default(chrono::Local::today().naive_local())
+            .prompt()?
+            .format("%Y-%m-%d")
+            .to_string(),
+
+        nif: "".to_owned(),
+
+        client_country: "".to_owned(),
+        client_nif: 12345,
+        client_name: "".to_owned(),
+        client_address: "".to_owned(),
+
+        value: "".to_owned(),
+    };
+
+    let password = "".to_owned();
 
     let irspt_api = IrsptApi::new().await?;
     let auth_api = IrsptApiAuth::new(&irspt_api);
     auth_api
-        .authenticate_async("142332425", "super_password123")
+        .authenticate_async(&invoice_request.nif, &password)
         .await?;
-
-    // let invoice_request = IssueInvoiceRequest {
-    //     nif: "123".to_owned(),
-    //     date: "2022-07-25".to_owned(),
-    // };
 
     Ok(())
 }

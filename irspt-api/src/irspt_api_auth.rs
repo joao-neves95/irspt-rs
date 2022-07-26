@@ -12,7 +12,7 @@ impl<'a> IrsptApiAuth<'a> {
         IrsptApiAuth { irspt_api }
     }
 
-    pub async fn authenticate_async(&self, username: &str, password: &str) -> Result<()> {
+    pub async fn authenticate_async(&self, nif: &str, password: &str) -> Result<()> {
         // TODO: Un-hardcode url.
         self.irspt_api
             .web_driver
@@ -23,7 +23,7 @@ impl<'a> IrsptApiAuth<'a> {
         let _ = &self
             .irspt_api
             .web_driver
-            .set_input_value_by_id_async("username", username)
+            .set_input_value_by_id_async("username", nif)
             .await?;
 
         let _ = &self
