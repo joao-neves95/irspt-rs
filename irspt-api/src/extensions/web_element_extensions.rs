@@ -11,7 +11,7 @@ pub trait WebElementExtensions {
         prop_value: &str,
     ) -> Result<WebElement>;
 
-    async fn select_option_prop_by_prop_value_async(
+    async fn select_option_by_prop_value_async(
         self,
         prop_name: &str,
         prop_value: &str,
@@ -27,13 +27,14 @@ impl WebElementExtensions for WebElement {
         prop_value: &str,
     ) -> Result<WebElement> {
         Ok(self
-            .find(By::Css(
-                format!("{}[{}='{}']", elem_name, prop_name, prop_value).as_str(),
-            ))
+            .find(By::Css(&format!(
+                "{}[{}='{}']",
+                elem_name, prop_name, prop_value
+            )))
             .await?)
     }
 
-    async fn select_option_prop_by_prop_value_async(
+    async fn select_option_by_prop_value_async(
         self,
         prop_name: &str,
         prop_value: &str,
