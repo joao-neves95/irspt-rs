@@ -3,7 +3,7 @@ pub struct IssueInvoiceRequest {
     pub date: String,
 
     pub client_country: String,
-    pub client_nif: i16,
+    pub client_nif: String,
     pub client_name: String,
     pub client_address: String,
 
