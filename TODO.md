@@ -1,6 +1,5 @@
 # TODO
 
-- Add a basic CLI prompt.
 - Ability to save as template.
 - Add tests to the CLI.
 - Add tests to WebDriverExtensions.
