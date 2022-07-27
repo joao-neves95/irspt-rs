@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 #[macro_export]
 macro_rules! is_integer {
     () => {
@@ -5,10 +7,7 @@ macro_rules! is_integer {
     };
 
     ($message:expr) => {
-        &|a| match a.parse::<i64>() {
-            Ok(_) => Ok(()),
-            Err(_) => Err(String::from($message)),
-        }
+        &|a| crate::validators::validate_number::<i64>(a, $message)
     };
 }
 
@@ -19,9 +18,16 @@ macro_rules! is_decimal {
     };
 
     ($message:expr) => {
-        &|a| match a.parse::<f64>() {
-            Ok(_) => Ok(()),
-            Err(_) => Err(String::from($message)),
-        }
+        &|a| crate::validators::validate_number::<f64>(a, $message)
     };
+}
+
+pub fn validate_number<T>(input: &str, message: &str) -> Result<(), String>
+where
+    T: FromStr,
+{
+    match input.parse::<T>() {
+        Ok(_) => Ok(()),
+        Err(_) => Err(String::from(message)),
+    }
 }
