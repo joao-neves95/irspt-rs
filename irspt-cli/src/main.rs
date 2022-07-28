@@ -3,7 +3,8 @@ mod validators;
 use anyhow::Result;
 use inquire::{required, DateSelect, Password, Text};
 
-use irspt_api::{models::IssueInvoiceRequest, IrsptApi, IrsptApiAuth};
+use irspt_api::{IrsptApi, IrsptApiAuth};
+use irspt_core::models::IssueInvoiceRequest;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -17,7 +18,8 @@ async fn main() -> Result<()> {
             .format("%Y-%m-%d")
             .to_string(),
 
-        client_country: Text::new("Client Country (e.g. PORTUGAL):")
+        client_country: Text::new("Client Country:")
+            .with_help_message("(e.g. PORTUGAL)")
             .with_validator(required!())
             .prompt()?
             .to_string()
