@@ -9,5 +9,5 @@ edition = "2021"
 irspt-core = { path = "../irspt-core/" }
 anyhow = "1.0"
 async-trait = "0.1"
-rmp-serde = "1.1"
+rkyv = { version = "0.7", features = ["alloc", "validation"] }
 sled = "0.34"

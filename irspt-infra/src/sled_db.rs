@@ -1,9 +1,8 @@
 use anyhow::Result;
-use irspt_core::traits::DbWrapper;
 use sled::Db;
 
 pub struct SledDb {
-    pub db: Option<Db>,
+    db: Option<Db>,
 }
 
 impl SledDb {
@@ -12,8 +11,16 @@ impl SledDb {
     }
 }
 
-impl<'a> DbWrapper<'a> for SledDb {
-    fn open(&mut self) -> Result<()> {
+impl SledDb {
+    pub fn db_ref(&self) -> Option<&Db> {
+        if self.db.is_none() {
+            return None;
+        }
+
+        Some(&self.db.as_ref().unwrap())
+    }
+
+    pub fn open(&mut self) -> Result<()> {
         if self.db.is_some() {
             return Ok(());
         }

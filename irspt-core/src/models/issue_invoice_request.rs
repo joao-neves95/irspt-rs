@@ -1,4 +1,8 @@
-#[derive(Debug)]
+use bytecheck::CheckBytes;
+use rkyv::{Archive, Deserialize, Serialize};
+
+#[derive(Debug, Archive, Deserialize, Serialize)]
+#[archive_attr(derive(CheckBytes))]
 pub struct IssueInvoiceRequest {
     pub date: String,
 
