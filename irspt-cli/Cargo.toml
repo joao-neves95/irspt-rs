@@ -9,6 +9,7 @@ edition = "2021"
 issue-invoice = []
 
 default = []
+# default = ["issue-invoice"]
 
 [dependencies]
 irspt-core = { path = "../irspt-core/" }

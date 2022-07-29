@@ -1,10 +1,8 @@
 mod validators;
+use irspt_core::models::IssueInvoiceRequest;
 
 use anyhow::Result;
 use inquire::{required, DateSelect, Password, Text};
-
-use irspt_api::{IrsptApi, IrsptApiAuth};
-use irspt_core::models::IssueInvoiceRequest;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -51,14 +49,16 @@ async fn main() -> Result<()> {
             .to_string(),
     };
 
-    let _password = Password::new("Password:")
+    let password = Password::new("Password:")
         .with_validator(required!())
         .prompt()?;
 
     #[cfg(feature = "issue-invoice")]
     {
-        let auth_api = IrsptApiAuth::new(&irspt_api);
+        use irspt_api::{IrsptApi, IrsptApiAuth};
+
         let irspt_api = IrsptApi::new().await?;
+        let auth_api = IrsptApiAuth::new(&irspt_api);
         auth_api
             .authenticate_async(&invoice_request.nif, &password)
             .await?;

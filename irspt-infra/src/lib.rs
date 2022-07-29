@@ -1,3 +1,5 @@
+mod byte_serialization;
+
 mod sled_db;
 use sled_db::SledDb;
 
