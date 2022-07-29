@@ -51,15 +51,18 @@ async fn main() -> Result<()> {
             .to_string(),
     };
 
-    let password = Password::new("Password:")
+    let _password = Password::new("Password:")
         .with_validator(required!())
         .prompt()?;
 
-    let irspt_api = IrsptApi::new().await?;
-    let auth_api = IrsptApiAuth::new(&irspt_api);
-    auth_api
-        .authenticate_async(&invoice_request.nif, &password)
-        .await?;
+    #[cfg(feature = "issue-invoice")]
+    {
+        let auth_api = IrsptApiAuth::new(&irspt_api);
+        let irspt_api = IrsptApi::new().await?;
+        auth_api
+            .authenticate_async(&invoice_request.nif, &password)
+            .await?;
+    }
 
     Ok(())
 }
