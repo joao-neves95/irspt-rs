@@ -11,7 +11,7 @@ where
     TModel: Serialize<AllocSerializer<512>>,
 {
     Ok(sled::IVec::from(
-        rkyv::to_bytes::<_, 512>(model)?.into_vec(),
+        rkyv::to_bytes::<_, 512>(model)?.as_slice(),
     ))
 }
 
