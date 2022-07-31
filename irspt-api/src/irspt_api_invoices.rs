@@ -1,12 +1,11 @@
-use anyhow::Result;
-use thirtyfour::By;
-
-use irspt_core::models::IssueInvoiceRequest;
-
 use crate::extensions::ElementProp;
 use crate::extensions::WebDriverExtensions;
 use crate::extensions::WebElementExtensions;
 use crate::IrsptApi;
+use irspt_core::models::IssueInvoiceRequest;
+
+use anyhow::Result;
+use thirtyfour::By;
 
 pub struct IrsptApiInvoices<'a> {
     irspt_api: &'a IrsptApi,

@@ -1,7 +1,7 @@
+use crate::{extensions::WebDriverExtensions, IrsptApi};
+
 use anyhow::{Ok, Result};
 use thirtyfour::By;
-
-use crate::{extensions::WebDriverExtensions, IrsptApi};
 
 pub struct IrsptApiAuth<'a> {
     irspt_api: &'a IrsptApi,

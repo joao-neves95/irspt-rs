@@ -7,12 +7,17 @@ edition = "2021"
 
 [features]
 issue-invoice = []
+save-invoice-template = []
 
-default = []
-# default = ["issue-invoice"]
+# default = []
+default = [
+  "save-invoice-template",
+  # "issue-invoice"
+]
 
 [dependencies]
 irspt-core = { path = "../irspt-core/" }
+irspt-infra = { path = "../irspt-infra/" }
 irspt-api = { path = "../irspt-api/" }
 anyhow = "1.0"
 tokio = "1.20.1"
