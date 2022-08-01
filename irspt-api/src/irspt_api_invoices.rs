@@ -21,7 +21,7 @@ impl<'a> IrsptApiInvoices<'a> {
     }
 
     // TODO: Separate this into multiple functions and then create a Builder pattern.
-    pub async fn issue_invoice(&self, request_model: IssueInvoiceRequest) -> Result<()> {
+    pub async fn issue_invoice_async(&self, request_model: &IssueInvoiceRequest) -> Result<()> {
         // TODO: Un-hardcode url.
         self.irspt_api
             .web_driver
@@ -48,6 +48,14 @@ impl<'a> IrsptApiInvoices<'a> {
         let _ = &self
             .irspt_api
             .web_driver
+            .find_elem_by_prop_value_async("select", "name", "pais")
+            .await?
+            .select_option_by_prop_value_async("label", &request_model.client_country)
+            .await?;
+
+        let _ = &self
+            .irspt_api
+            .web_driver
             .set_input_value_by_prop_value_async(
                 "name",
                 "nifAdquirente",
@@ -65,6 +73,7 @@ impl<'a> IrsptApiInvoices<'a> {
             )
             .await?;
 
+        // Ignore error (only clients from Portugal need the address).
         let _ = &self
             .irspt_api
             .web_driver
@@ -73,7 +82,7 @@ impl<'a> IrsptApiInvoices<'a> {
                 "moradaAdquirente",
                 &request_model.client_address.to_string(),
             )
-            .await?;
+            .await;
 
         let _ = &self
             .irspt_api
@@ -142,6 +151,16 @@ impl<'a> IrsptApiInvoices<'a> {
             .find(By::ClassName("fixed-header"))
             .await?
             .find(By::Tag("button"))
+            .await?
+            .click()
+            .await?;
+
+        let _ = &self
+            .irspt_api
+            .web_driver
+            .find(By::Id("emitirModal"))
+            .await?
+            .find(By::ClassName("btn-success"))
             .await?
             .click()
             .await?;

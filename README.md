@@ -6,7 +6,7 @@
 
 A CLI program to issue invoices by interfacing with Portugal's Tax Authority.\
 It's possible to create a template to automate the process of issuing an invoice.\
-This is a first version for my use. At the moment, it does not support support features like:
+This is a first version for my own use. At the moment, it does not support support features like:
 
 - Multi-template support.
 - Input selection by using reference data.

@@ -1,5 +1,6 @@
 mod prompt;
 mod validators;
+use irspt_api::IrsptApiInvoices;
 use irspt_core::{
     models::{InvoiceTemplate, IssueInvoiceRequest},
     traits::InvoiceTemplateStore,
@@ -33,14 +34,12 @@ async fn main() -> Result<()> {
         .with_help_message("Your password will not be stored.")
         .prompt()?;
 
-    let _nif = invoice_request.nif.to_owned();
+    let template = InvoiceTemplate {
+        name: DEFAULT_TEMPLATE_NAME.to_owned(),
+        invoice_model: invoice_request,
+    };
 
     if save_template {
-        let template = InvoiceTemplate {
-            name: DEFAULT_TEMPLATE_NAME.to_owned(),
-            invoice_model: invoice_request,
-        };
-
         if existing_model.is_some() {
             invoice_template_store.update_template(&template)?;
         } else {
@@ -61,8 +60,13 @@ async fn main() -> Result<()> {
             "ERROR: Issue while trying to connect to the WebDriver server. Make sure it's running.",
         )?;
 
-        let auth_api = IrsptApiAuth::new(&irspt_api);
-        auth_api.authenticate_async(&_nif, &password).await?;
+        IrsptApiAuth::new(&irspt_api)
+            .authenticate_async(&template.invoice_model.nif, &password)
+            .await?;
+
+        IrsptApiInvoices::new(&irspt_api)
+            .issue_invoice_async(&template.invoice_model)
+            .await?;
 
         irspt_api.close_async().await?;
     }
