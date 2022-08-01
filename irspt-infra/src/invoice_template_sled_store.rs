@@ -88,4 +88,14 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
             &sled::IVec::from(raw_updated_result.unwrap()),
         )?))
     }
+
+    fn remove_template(&self, template_name: &str) -> Result<()> {
+        self.sled_db
+            .db_ref()
+            .unwrap()
+            .open_tree(INVOICE_TEAMPLATES_TABLE_NAME)?
+            .remove(&template_name)?;
+
+        Ok(())
+    }
 }
