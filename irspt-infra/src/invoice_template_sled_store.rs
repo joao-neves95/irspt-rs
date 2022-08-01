@@ -35,7 +35,7 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
             return Ok(None);
         }
 
-        let template = deserialize_from_bytes::<InvoiceTemplate>(&raw_result.unwrap());
+        let template = deserialize_from_bytes::<InvoiceTemplate>(&raw_result.unwrap())?;
 
         Ok(Some(template))
     }
@@ -65,7 +65,8 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
 
                 let mut template = deserialize_from_bytes::<InvoiceTemplate>(&sled::IVec::from(
                     old_template.unwrap(),
-                ));
+                ))
+                .unwrap();
 
                 template.invoice_model.nif = model.invoice_model.nif.to_owned();
                 template.invoice_model.value = model.invoice_model.value.to_owned();
@@ -85,6 +86,6 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
 
         Ok(Some(deserialize_from_bytes::<InvoiceTemplate>(
             &sled::IVec::from(raw_updated_result.unwrap()),
-        )))
+        )?))
     }
 }

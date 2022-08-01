@@ -13,4 +13,10 @@ impl IrsptApi {
 
         Ok(IrsptApi { web_driver: driver })
     }
+
+    pub async fn close_async(self) -> Result<()> {
+        self.web_driver.quit().await?;
+
+        Ok(())
+    }
 }
