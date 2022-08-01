@@ -21,7 +21,12 @@ where
     TModel::Archived:
         'a + CheckBytes<DefaultValidator<'a>> + Deserialize<TModel, SharedDeserializeMap>,
 {
-    Ok(rkyv::from_bytes::<TModel>(raw_result).unwrap())
+    match rkyv::from_bytes::<TModel>(raw_result) {
+        Result::Ok(result) => Ok(result),
+        Err(_) => Err(anyhow::anyhow!(
+            "Byte deserialization error. Invalid struct."
+        )),
+    }
 }
 
 #[cfg(test)]
