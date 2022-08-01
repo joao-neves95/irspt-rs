@@ -7,9 +7,9 @@ pub struct IrsptApi {
 
 impl IrsptApi {
     pub async fn new() -> Result<IrsptApi, Error> {
-        let caps = DesiredCapabilities::chrome();
+        let caps = DesiredCapabilities::firefox();
         // TODO: Un-hardcode url.
-        let driver = WebDriver::new("http://localhost:9515", caps).await?;
+        let driver = WebDriver::new("http://127.0.0.1:4444", caps).await?;
 
         Ok(IrsptApi { web_driver: driver })
     }

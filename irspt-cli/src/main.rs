@@ -6,7 +6,7 @@ use irspt_core::{
 };
 use irspt_infra::{InvoiceTemplateSledStore, SledDb};
 
-use anyhow::{Ok, Result};
+use anyhow::{Context, Result};
 use inquire::Confirm;
 use prompt::prompt_invoice_request;
 
@@ -57,7 +57,10 @@ async fn main() -> Result<()> {
             .with_validator(required!())
             .prompt()?;
 
-        let irspt_api = IrsptApi::new().await?;
+        let irspt_api = IrsptApi::new().await.context(
+            "ERROR: Issue while trying to connect to the WebDriver server. Make sure it's running.",
+        )?;
+
         let auth_api = IrsptApiAuth::new(&irspt_api);
         auth_api.authenticate_async(&_nif, &password).await?;
 
