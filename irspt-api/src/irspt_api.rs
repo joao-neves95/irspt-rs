@@ -1,5 +1,5 @@
 use anyhow::{Error, Result};
-use thirtyfour::prelude::*;
+use thirtyfour::{DesiredCapabilities, WebDriver};
 
 pub struct IrsptApi {
     pub web_driver: WebDriver,

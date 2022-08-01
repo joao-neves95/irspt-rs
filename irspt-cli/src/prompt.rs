@@ -16,6 +16,16 @@ pub fn prompt_invoice_request(
             .format("%Y-%m-%d")
             .to_string(),
 
+        description: Text::new("Service description:")
+            .with_validator(required!())
+            .with_default(if existing_template.is_some() {
+                &existing_template.as_ref().unwrap().description
+            } else {
+                ""
+            })
+            .prompt()?
+            .to_string(),
+
         client_country: Text::new("Client Country:")
             .with_help_message("(e.g. 'PORTUGAL', 'REINO UNIDO')")
             .with_validator(required!())

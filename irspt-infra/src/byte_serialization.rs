@@ -40,6 +40,7 @@ mod tests {
     fn de_serialize_to_from_bytes_passes() {
         let model = IssueInvoiceRequest {
             date: "2020-08-01".to_owned(),
+            description: "the service I did".to_owned(),
             client_nif: "123".to_owned(),
             client_name: "test inc.".to_owned(),
             client_country: "usa".to_owned(),
@@ -58,6 +59,7 @@ mod tests {
         let deserialized_model = deserialized_model_res.as_ref().unwrap();
         assert!(deserialized_model.value == model.value);
         assert!(deserialized_model.date == model.date);
+        assert!(deserialized_model.description == model.description);
         assert!(deserialized_model.nif == model.nif);
         assert!(deserialized_model.client_name == model.client_name);
         assert!(deserialized_model.client_nif == model.client_nif);

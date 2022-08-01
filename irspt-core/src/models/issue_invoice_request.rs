@@ -5,6 +5,7 @@ use rkyv::{Archive, Deserialize, Serialize};
 #[archive_attr(derive(CheckBytes))]
 pub struct IssueInvoiceRequest {
     pub date: String,
+    pub description: String,
 
     pub client_country: String,
     pub client_nif: String,
@@ -13,10 +14,4 @@ pub struct IssueInvoiceRequest {
 
     pub value: String,
     pub nif: String,
-}
-
-impl IssueInvoiceRequest {
-    pub fn build_description(&self) -> String {
-        "".to_owned()
-    }
 }

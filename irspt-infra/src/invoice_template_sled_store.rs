@@ -47,7 +47,7 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
             .db_ref()
             .unwrap()
             .open_tree(INVOICE_TEAMPLATES_TABLE_NAME)?
-            .insert(model.name.to_owned(), model_bytes)?;
+            .insert(&model.name, model_bytes)?;
 
         Ok(())
     }
@@ -70,6 +70,7 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
 
                 template.invoice_model.nif = model.invoice_model.nif.to_owned();
                 template.invoice_model.value = model.invoice_model.value.to_owned();
+                template.invoice_model.description = model.invoice_model.description.to_owned();
                 template.invoice_model.client_nif = model.invoice_model.client_nif.to_owned();
                 template.invoice_model.client_name = model.invoice_model.client_name.to_owned();
                 template.invoice_model.client_address =

@@ -102,7 +102,7 @@ impl<'a> IrsptApiInvoices<'a> {
             .set_input_value_by_prop_value_async(
                 "name",
                 "servicoPrestado",
-                &request_model.build_description(),
+                &request_model.description,
             )
             .await?;
 
