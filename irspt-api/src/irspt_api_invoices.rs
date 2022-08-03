@@ -25,6 +25,8 @@ impl<'a> IrsptApiInvoices<'a> {
 
     // TODO: Separate this into multiple functions and then create a Builder pattern.
     pub async fn issue_invoice_async(&self, request_model: &IssueInvoiceRequest) -> Result<()> {
+        let is_portuguese_client = request_model.client_country == "PORTUGAL";
+
         // TODO: Un-hardcode url.
         self.irspt_api
             .web_driver
@@ -45,7 +47,7 @@ impl<'a> IrsptApiInvoices<'a> {
         let _ = &self
             .irspt_api
             .web_driver
-            .find_elem_by_prop_value_async("select", "name", "tipoRecibo")
+            .find_by_prop_value_async("select", "name", "tipoRecibo")
             .await?
             .select_option_by_prop_value_async("label", "Fatura-Recibo")
             .await?;
@@ -55,9 +57,9 @@ impl<'a> IrsptApiInvoices<'a> {
         let _ = &self
             .irspt_api
             .web_driver
-            .find_elem_by_prop_value_async("select", "name", "pais")
+            .find_by_prop_value_async("select", "name", "pais")
             .await?
-            .select_option_by_prop_value_async("label", &request_model.client_country)
+            .select_option_by_prop_value_containing_async("label", &request_model.client_country)
             .await?;
 
         let _ = &self
@@ -65,7 +67,11 @@ impl<'a> IrsptApiInvoices<'a> {
             .web_driver
             .set_input_value_by_prop_value_async(
                 "name",
-                "nifAdquirente",
+                if is_portuguese_client {
+                    "nifAdquirente"
+                } else {
+                    "nifEstrangeiro"
+                },
                 &request_model.client_nif.to_string(),
             )
             .await?;
@@ -80,31 +86,32 @@ impl<'a> IrsptApiInvoices<'a> {
             )
             .await?;
 
-        // Ignore error (only clients from Portugal need the address).
-        let _ = &self
-            .irspt_api
-            .web_driver
-            .set_input_value_by_prop_value_async(
-                "name",
-                "moradaAdquirente",
-                &request_model.client_address.to_string(),
-            )
-            .await;
+        if is_portuguese_client {
+            let _ = &self
+                .irspt_api
+                .web_driver
+                .set_input_value_by_prop_value_async(
+                    "name",
+                    "moradaAdquirente",
+                    &request_model.client_address.to_string(),
+                )
+                .await;
+        }
 
         let _ = &self
             .irspt_api
             .web_driver
-            .find_elem_by_props_value_async(
+            .find_by_props_value_async(
                 "input",
                 &[
                     &ElementProp {
-                        prop_value: "name",
-                        prop_name: "titulo",
+                        prop_name: "name",
+                        prop_value: "titulo",
                     },
                     // TODO: Add support for different titles of payment ("títulos de pagamento") - by using .reference_data().
                     &ElementProp {
-                        prop_value: "value",
-                        prop_name: "1",
+                        prop_name: "value",
+                        prop_value: "1",
                     },
                 ],
             )
@@ -115,7 +122,7 @@ impl<'a> IrsptApiInvoices<'a> {
         let _ = &self
             .irspt_api
             .web_driver
-            .set_input_value_by_prop_value_async(
+            .set_textarea_value_by_prop_value_async(
                 "name",
                 "servicoPrestado",
                 &request_model.description,
@@ -131,7 +138,7 @@ impl<'a> IrsptApiInvoices<'a> {
         let _ = &self
             .irspt_api
             .web_driver
-            .find_elem_by_prop_value_async("select", "name", "regimeIva")
+            .find_by_prop_value_async("select", "name", "regimeIva")
             .await?
             // TODO: Add support for different IVA regimes ("regimes de IVA") - by using .reference_data().
             .select_option_by_prop_value_async(
@@ -143,7 +150,7 @@ impl<'a> IrsptApiInvoices<'a> {
         let _ = &self
             .irspt_api
             .web_driver
-            .find_elem_by_prop_value_async("select", "name", "regimeIncidenciaIrs")
+            .find_by_prop_value_async("select", "name", "regimeIncidenciaIrs")
             .await?
             // TODO: Add support for different IVA regimes ("regimes de incidência IRS") - by using .reference_data().
             .select_option_by_prop_value_async(

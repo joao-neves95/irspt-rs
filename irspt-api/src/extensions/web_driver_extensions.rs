@@ -9,14 +9,14 @@ pub struct ElementProp<'a> {
 
 #[async_trait]
 pub trait WebDriverExtensions {
-    async fn find_elem_by_prop_value_async(
+    async fn find_by_prop_value_async(
         &self,
         elem_name: &str,
         prop_name: &str,
         prop_value: &str,
     ) -> Result<WebElement>;
 
-    async fn find_elem_by_props_value_async(
+    async fn find_by_props_value_async(
         &self,
         elem_name: &str,
         props: &[&ElementProp],
@@ -30,11 +30,18 @@ pub trait WebDriverExtensions {
         prop_value: &str,
         value: &str,
     ) -> Result<()>;
+
+    async fn set_textarea_value_by_prop_value_async(
+        &self,
+        prop_name: &str,
+        prop_value: &str,
+        value: &str,
+    ) -> Result<()>;
 }
 
 #[async_trait]
 impl WebDriverExtensions for WebDriver {
-    async fn find_elem_by_prop_value_async(
+    async fn find_by_prop_value_async(
         &self,
         elem_name: &str,
         prop_name: &str,
@@ -48,7 +55,7 @@ impl WebDriverExtensions for WebDriver {
             .await?)
     }
 
-    async fn find_elem_by_props_value_async(
+    async fn find_by_props_value_async(
         &self,
         elem_name: &str,
         props: &[&ElementProp],
@@ -75,7 +82,21 @@ impl WebDriverExtensions for WebDriver {
         prop_value: &str,
         value: &str,
     ) -> Result<()> {
-        self.find_elem_by_prop_value_async("input", prop_name, prop_value)
+        self.find_by_prop_value_async("input", prop_name, prop_value)
+            .await?
+            .send_keys(value)
+            .await?;
+
+        Ok(())
+    }
+
+    async fn set_textarea_value_by_prop_value_async(
+        &self,
+        prop_name: &str,
+        prop_value: &str,
+        value: &str,
+    ) -> Result<()> {
+        self.find_by_prop_value_async("textarea", prop_name, prop_value)
             .await?
             .send_keys(value)
             .await?;
