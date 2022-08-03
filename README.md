@@ -1,7 +1,5 @@
 # irspt-rs
 
-## This is still under development and it does not yet work.
-
 ## Description
 
 A CLI program to issue invoices by interfacing with Portugal's Tax Authority.\

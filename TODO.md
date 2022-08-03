@@ -1,5 +1,6 @@
 # TODO
 
+- Un-hardcode strings with embedded resources.
 - Add tests to WebDriverExtensions.
 - Add tests to WebElementExtensions.
 - Refactor the APIs with design patterns.

@@ -9,7 +9,7 @@ edition = "2021"
 issue-invoice = []
 
 default = [
-  # "issue-invoice"
+  "issue-invoice"
 ]
 
 [dependencies]
