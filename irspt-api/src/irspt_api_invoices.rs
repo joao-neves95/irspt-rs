@@ -4,6 +4,9 @@ use crate::extensions::WebElementExtensions;
 use crate::IrsptApi;
 use irspt_core::models::IssueInvoiceRequest;
 
+use std::thread;
+use std::time;
+
 use anyhow::Result;
 use thirtyfour::By;
 
@@ -31,6 +34,8 @@ impl<'a> IrsptApiInvoices<'a> {
             ))
             .await?;
 
+        thread::sleep(time::Duration::from_secs(1));
+
         let _ = &self
             .irspt_api
             .web_driver
@@ -44,6 +49,8 @@ impl<'a> IrsptApiInvoices<'a> {
             .await?
             .select_option_by_prop_value_async("label", "Fatura-Recibo")
             .await?;
+
+        thread::sleep(time::Duration::from_millis(500));
 
         let _ = &self
             .irspt_api

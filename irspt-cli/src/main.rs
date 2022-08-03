@@ -7,6 +7,8 @@ use irspt_core::{
 };
 use irspt_infra::{InvoiceTemplateSledStore, SledDb};
 
+use std::{thread, time};
+
 use anyhow::{Context, Result};
 use inquire::Confirm;
 use prompt::prompt_invoice_request;
@@ -68,6 +70,7 @@ async fn main() -> Result<()> {
             .issue_invoice_async(&template.invoice_model)
             .await?;
 
+        thread::sleep(time::Duration::from_secs(5));
         irspt_api.close_async().await?;
     }
 
@@ -78,7 +81,7 @@ fn delete_template_if_invalid_prompt<'a>(
     invoice_template_store: &impl InvoiceTemplateStore<'a>,
 ) -> Result<Option<IssueInvoiceRequest>> {
     let delete_template = Confirm::new(
-        "ERROR: Your template data is invalid. Delete the existing one to create a new one?",
+        "ERROR: Your template data was corrupted. Delete the existing one to create a new one?",
     )
     .with_default(true)
     .prompt()?;

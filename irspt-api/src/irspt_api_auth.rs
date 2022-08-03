@@ -1,5 +1,7 @@
 use crate::{extensions::WebDriverExtensions, IrsptApi};
 
+use std::{thread, time};
+
 use anyhow::{Ok, Result};
 use thirtyfour::By;
 
@@ -38,6 +40,8 @@ impl<'a> IrsptApiAuth<'a> {
             .await?
             .click()
             .await?;
+
+        thread::sleep(time::Duration::from_secs(2));
 
         Ok(())
     }
