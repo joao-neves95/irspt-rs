@@ -7,6 +7,7 @@ use irspt_contracts::{models::InvoiceTemplate, traits::InvoiceTemplateStore};
 use anyhow::{Ok, Result};
 
 const INVOICE_TEAMPLATES_TABLE_NAME: &str = "INVOICE_TEAMPLATES";
+const INVOICE_TEAMPLATES_VERSION_TABLE_NAME: &str = "INVOICE_TEAMPLATES_V";
 
 pub struct InvoiceTemplateSledStore<'a> {
     sled_db: &'a SledDb,
@@ -23,6 +24,34 @@ impl<'a> InvoiceTemplateSledStore<'a> {
 }
 
 impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
+    fn get_saved_template_version(&self) -> Result<Option<u8>> {
+        let raw_result = self
+            .sled_db
+            .db_ref()
+            .unwrap()
+            .open_tree(INVOICE_TEAMPLATES_TABLE_NAME)?
+            .get(INVOICE_TEAMPLATES_VERSION_TABLE_NAME)?;
+
+        if raw_result.is_none() {
+            return Ok(None);
+        }
+
+        Ok(Some(deserialize_from_bytes::<u8>(&raw_result.unwrap())?))
+    }
+
+    fn set_saved_template_version(&self, version: u8) -> Result<()> {
+        self.sled_db
+            .db_ref()
+            .unwrap()
+            .open_tree(INVOICE_TEAMPLATES_TABLE_NAME)?
+            .insert(
+                INVOICE_TEAMPLATES_VERSION_TABLE_NAME,
+                serialize_to_bytes(&version)?,
+            )?;
+
+        Ok(())
+    }
+
     fn get_template(&self, template_name: &str) -> Result<Option<InvoiceTemplate>> {
         let raw_result = self
             .sled_db
@@ -35,9 +64,9 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
             return Ok(None);
         }
 
-        let template = deserialize_from_bytes::<InvoiceTemplate>(&raw_result.unwrap())?;
-
-        Ok(Some(template))
+        Ok(Some(deserialize_from_bytes::<InvoiceTemplate>(
+            &raw_result.unwrap(),
+        )?))
     }
 
     fn add_template(&self, model: &InvoiceTemplate) -> Result<()> {
@@ -52,7 +81,7 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
         Ok(())
     }
 
-    fn update_template(&self, model: &InvoiceTemplate) -> Result<Option<InvoiceTemplate>> {
+    fn update_template(&self, model: &InvoiceTemplate) -> Result<Option<u8>> {
         let raw_updated_result = self
             .sled_db
             .db_ref()
@@ -85,9 +114,7 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
             return Ok(None);
         }
 
-        Ok(Some(deserialize_from_bytes::<InvoiceTemplate>(
-            &sled::IVec::from(raw_updated_result.unwrap()),
-        )?))
+        Ok(Some(1))
     }
 
     fn remove_template(&self, template_name: &str) -> Result<()> {
