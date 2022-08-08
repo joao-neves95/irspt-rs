@@ -11,7 +11,7 @@ pub trait InvoiceTemplateStore<'a> {
 
     fn add_template(&self, model: &InvoiceTemplate) -> Result<()>;
 
-    fn update_template(&self, model: &InvoiceTemplate) -> Result<Option<u8>>;
+    fn update_template(&self, model: &InvoiceTemplate) -> Result<()>;
 
     fn remove_template(&self, template_name: &str) -> Result<()>;
 }
