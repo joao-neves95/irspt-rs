@@ -14,7 +14,6 @@ default = [
 
 [dependencies]
 irspt-contracts = { path = "../irspt-contracts/" }
-irspt-core = { path = "../irspt-core/" }
 irspt-infra = { path = "../irspt-infra/" }
 irspt-api = { path = "../irspt-api/" }
 anyhow = "1.0"

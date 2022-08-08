@@ -519,7 +519,6 @@ dependencies = [
  "inquire",
  "irspt-api",
  "irspt-contracts",
- "irspt-core",
  "irspt-infra",
  "tokio",
 ]
@@ -532,15 +531,6 @@ dependencies = [
  "async-trait",
  "bytecheck",
  "rkyv",
-]
-
-[[package]]
-name = "irspt-core"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "irspt-contracts",
- "irspt-infra",
 ]
 
 [[package]]
