@@ -7,6 +7,5 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
-async-trait = "0.1"
-rkyv = { version = "0.7", features = ["alloc", "validation"] }
-bytecheck = "0.6"
+irspt-contracts = { path = "../irspt-contracts/" }
+irspt-infra = { path = "../irspt-infra/" }

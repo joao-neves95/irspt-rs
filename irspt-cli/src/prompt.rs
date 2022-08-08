@@ -1,5 +1,5 @@
 use crate::{is_decimal, is_integer};
-use irspt_core::models::IssueInvoiceRequest;
+use irspt_contracts::models::IssueInvoiceRequest;
 
 use anyhow::Result;
 use inquire::{required, DateSelect, Text};

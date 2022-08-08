@@ -1,14 +1,12 @@
 [package]
-name = "irspt-infra"
+name = "irspt-contracts"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-irspt-contracts = { path = "../irspt-contracts/" }
-anyhow = "1.0"
 async-trait = "0.1"
-rkyv = { version = "0.7", features = ["alloc", "validation"] }
+anyhow = "1.0"
+rkyv = { version = "0.7", features = ["validation"] }
 bytecheck = "0.6"
-sled = "0.34"

@@ -506,7 +506,7 @@ version = "1.0.0"
 dependencies = [
  "anyhow",
  "async-trait",
- "irspt-core",
+ "irspt-contracts",
  "thirtyfour",
 ]
 
@@ -518,13 +518,14 @@ dependencies = [
  "chrono",
  "inquire",
  "irspt-api",
+ "irspt-contracts",
  "irspt-core",
  "irspt-infra",
  "tokio",
 ]
 
 [[package]]
-name = "irspt-core"
+name = "irspt-contracts"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -534,13 +535,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "irspt-core"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "irspt-contracts",
+ "irspt-infra",
+]
+
+[[package]]
 name = "irspt-infra"
 version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
  "bytecheck",
- "irspt-core",
+ "irspt-contracts",
  "rkyv",
  "sled",
 ]

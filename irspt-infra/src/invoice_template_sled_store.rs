@@ -2,7 +2,7 @@ use crate::{
     byte_serialization::{deserialize_from_bytes, serialize_to_bytes},
     sled_db::SledDb,
 };
-use irspt_core::{models::InvoiceTemplate, traits::InvoiceTemplateStore};
+use irspt_contracts::{models::InvoiceTemplate, traits::InvoiceTemplateStore};
 
 use anyhow::{Ok, Result};
 

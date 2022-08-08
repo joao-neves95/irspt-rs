@@ -1,7 +1,7 @@
 mod prompt;
 mod validators;
 use irspt_api::IrsptApiInvoices;
-use irspt_core::{
+use irspt_contracts::{
     models::{InvoiceTemplate, IssueInvoiceRequest},
     traits::InvoiceTemplateStore,
 };

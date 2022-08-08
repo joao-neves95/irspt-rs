@@ -2,7 +2,7 @@ use crate::extensions::ElementProp;
 use crate::extensions::WebDriverExtensions;
 use crate::extensions::WebElementExtensions;
 use crate::IrsptApi;
-use irspt_core::models::IssueInvoiceRequest;
+use irspt_contracts::models::IssueInvoiceRequest;
 
 use std::thread;
 use std::time;
