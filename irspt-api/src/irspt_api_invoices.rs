@@ -32,7 +32,7 @@ impl<'a> IrsptApiInvoices<'a> {
             .web_driver
             .goto(format!(
                 "https://irs.portaldasfinancas.gov.pt/recibos/portal/emitirfatura#?modoConsulta=Prestador&nifPrestadorServicos={}&isAutoSearchOn=on",
-                request_model.nif
+                &request_model.nif
             ))
             .await?;
 
@@ -72,7 +72,7 @@ impl<'a> IrsptApiInvoices<'a> {
                 } else {
                     "nifEstrangeiro"
                 },
-                &request_model.client_nif.to_string(),
+                &request_model.client_nif,
             )
             .await?;
 
@@ -82,7 +82,7 @@ impl<'a> IrsptApiInvoices<'a> {
             .set_input_value_by_prop_value_async(
                 "name",
                 "nomeAdquirente",
-                &request_model.client_name.to_string(),
+                &request_model.client_name,
             )
             .await?;
 
@@ -93,7 +93,7 @@ impl<'a> IrsptApiInvoices<'a> {
                 .set_input_value_by_prop_value_async(
                     "name",
                     "moradaAdquirente",
-                    &request_model.client_address.to_string(),
+                    &request_model.client_address,
                 )
                 .await;
         }
