@@ -18,8 +18,8 @@ pub struct IssueInvoiceRequest {
     pub nif: String,
 }
 
-impl From<HashMap<String, String>> for IssueInvoiceRequest {
-    fn from(hash_map: HashMap<String, String>) -> Self {
+impl From<&HashMap<String, String>> for IssueInvoiceRequest {
+    fn from(hash_map: &HashMap<String, String>) -> Self {
         IssueInvoiceRequest {
             // TODO: Un-hardcode strings.
             date: get_hashmap_column(&hash_map, "date"),
@@ -34,17 +34,18 @@ impl From<HashMap<String, String>> for IssueInvoiceRequest {
     }
 }
 
-impl Into<HashMap<String, String>> for IssueInvoiceRequest {
+impl Into<HashMap<String, String>> for &IssueInvoiceRequest {
     fn into(self) -> HashMap<String, String> {
         HashMap::from([
-            ("date".to_owned(), self.date),
-            ("description".to_owned(), self.description),
-            ("client_country".to_owned(), self.client_country),
-            ("client_nif".to_owned(), self.client_nif),
-            ("client_name".to_owned(), self.client_name),
-            ("client_address".to_owned(), self.client_address),
-            ("value".to_owned(), self.value),
-            ("nif".to_owned(), self.nif),
+            // TODO: Un-hardcode strings.
+            ("date".to_owned(), self.date.to_owned()),
+            ("description".to_owned(), self.description.to_owned()),
+            ("client_country".to_owned(), self.client_country.to_owned()),
+            ("client_nif".to_owned(), self.client_nif.to_owned()),
+            ("client_name".to_owned(), self.client_name.to_owned()),
+            ("client_address".to_owned(), self.client_address.to_owned()),
+            ("value".to_owned(), self.value.to_owned()),
+            ("nif".to_owned(), self.nif.to_owned()),
         ])
     }
 }
@@ -72,7 +73,7 @@ mod tests {
     fn from_hashmap_passes() -> () {
         let test_data: [(String, String); 8] = get_test_table();
 
-        let model = IssueInvoiceRequest::from(HashMap::from(test_data.clone()));
+        let model = IssueInvoiceRequest::from(&HashMap::from(test_data.clone()));
         assert_eq!(model.date, test_data[0].1);
         assert_eq!(model.description, test_data[1].1);
         assert_eq!(model.client_country, test_data[2].1);
@@ -96,7 +97,7 @@ mod tests {
             value: "56474567.351".to_owned(),
         };
 
-        let table: HashMap<String, String> = test_data.into();
+        let table: HashMap<String, String> = (&test_data).into();
         assert_eq!(table.get_key_value("date").unwrap().1, &"dfgadfg");
         assert_eq!(
             table.get_key_value("client_address").unwrap().1,

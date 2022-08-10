@@ -2,7 +2,9 @@ use crate::{
     byte_serialization::{deserialize_from_bytes, serialize_to_bytes},
     sled_db::SledDb,
 };
-use irspt_contracts::{models::InvoiceTemplate, traits::InvoiceTemplateStore};
+use irspt_contracts::{models::IssueInvoiceRequest, traits::InvoiceTemplateStore};
+
+use std::collections::HashMap;
 
 use anyhow::{Ok, Result};
 
@@ -23,7 +25,7 @@ impl<'a> InvoiceTemplateSledStore<'a> {
 }
 
 impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
-    fn get_template(&self, template_name: &str) -> Result<Option<InvoiceTemplate>> {
+    fn get_template(&self, template_name: &str) -> Result<Option<IssueInvoiceRequest>> {
         let raw_result = self
             .sled_db
             .db_ref()
@@ -35,25 +37,27 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
             return Ok(None);
         }
 
-        Ok(Some(deserialize_from_bytes::<InvoiceTemplate>(
-            &raw_result.unwrap(),
-        )?))
+        Ok(Some(IssueInvoiceRequest::from(&deserialize_from_bytes::<
+            HashMap<String, String>,
+        >(
+            &raw_result.unwrap()
+        )?)))
     }
 
-    fn add_template(&self, model: &InvoiceTemplate) -> Result<()> {
-        let model_bytes = serialize_to_bytes(model)?;
+    fn add_template(&self, template_name: &str, model: &IssueInvoiceRequest) -> Result<()> {
+        let model_bytes = serialize_to_bytes::<HashMap<String, String>>(&model.into())?;
 
         self.sled_db
             .db_ref()
             .unwrap()
             .open_tree(INVOICE_TEAMPLATES_TABLE_NAME)?
-            .insert(&model.name, model_bytes)?;
+            .insert(template_name, &model_bytes)?;
 
         Ok(())
     }
 
-    fn update_template(&self, model: &InvoiceTemplate) -> Result<()> {
-        self.add_template(model)?;
+    fn update_template(&self, template_name: &str, model: &IssueInvoiceRequest) -> Result<()> {
+        self.add_template(template_name, model)?;
 
         Ok(())
     }
@@ -63,7 +67,7 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
             .db_ref()
             .unwrap()
             .open_tree(INVOICE_TEAMPLATES_TABLE_NAME)?
-            .remove(&template_name)?;
+            .remove(template_name)?;
 
         Ok(())
     }
