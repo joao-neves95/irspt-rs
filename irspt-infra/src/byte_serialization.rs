@@ -31,8 +31,9 @@ where
 mod tests {
     use super::deserialize_from_bytes;
     use super::serialize_to_bytes;
-
     use irspt_contracts::models::IssueInvoiceRequest;
+
+    use std::collections::HashMap;
 
     #[test]
     fn de_serialize_struct_passes() {
@@ -73,5 +74,29 @@ mod tests {
         let deserialized_value_res = deserialize_from_bytes::<u8>(&raw_bytes_res.unwrap());
         assert!(deserialized_value_res.as_ref().is_ok());
         assert!(deserialized_value_res.unwrap() == primitive_value);
+    }
+
+    #[test]
+    fn de_serialize_hashmap_passes() {
+        let table = HashMap::from([
+            ("1".to_owned(), "4n758y_rg897ys".to_owned()),
+            ("2".to_owned(), "97b6gng$&€€$$$".to_owned()),
+            ("3".to_owned(), "r9set_8".to_owned()),
+        ]);
+
+        let raw_bytes_res = serialize_to_bytes(&table);
+        assert!(raw_bytes_res.is_ok());
+
+        let deserialized_value_res =
+            deserialize_from_bytes::<HashMap<String, String>>(&raw_bytes_res.unwrap());
+        assert!(deserialized_value_res.as_ref().is_ok());
+        assert!(
+            deserialized_value_res
+                .unwrap()
+                .get_key_value("2")
+                .unwrap()
+                .1
+                == "97b6gng$&€€$$$"
+        );
     }
 }
