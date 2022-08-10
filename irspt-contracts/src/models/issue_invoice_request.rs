@@ -18,22 +18,66 @@ pub struct IssueInvoiceRequest {
     pub nif: String,
 }
 
-impl From<HashMap<&str, String>> for IssueInvoiceRequest {
-    fn from(hash_map: HashMap<&str, String>) -> Self {
+impl From<HashMap<String, String>> for IssueInvoiceRequest {
+    fn from(hash_map: HashMap<String, String>) -> Self {
         IssueInvoiceRequest {
             // TODO: Un-hardcode strings.
-            date: get_hashmap_column("date", &hash_map),
-            description: get_hashmap_column("description", &hash_map),
-            client_country: get_hashmap_column("client_country", &hash_map),
-            client_nif: get_hashmap_column("client_nif", &hash_map),
-            client_name: get_hashmap_column("client_name", &hash_map),
-            client_address: get_hashmap_column("client_address", &hash_map),
-            value: get_hashmap_column("value", &hash_map),
-            nif: get_hashmap_column("nif", &hash_map),
+            date: get_hashmap_column(&hash_map, "date"),
+            description: get_hashmap_column(&hash_map, "description"),
+            client_country: get_hashmap_column(&hash_map, "client_country"),
+            client_nif: get_hashmap_column(&hash_map, "client_nif"),
+            client_name: get_hashmap_column(&hash_map, "client_name"),
+            client_address: get_hashmap_column(&hash_map, "client_address"),
+            value: get_hashmap_column(&hash_map, "value"),
+            nif: get_hashmap_column(&hash_map, "nif"),
         }
     }
 }
 
-fn get_hashmap_column(key: &str, hash_map: &HashMap<&str, String>) -> String {
+fn get_hashmap_column(hash_map: &HashMap<String, String>, key: &str) -> String {
     hash_map.get(key).unwrap_or(&"".to_owned()).to_owned()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::IssueInvoiceRequest;
+    use crate::models::issue_invoice_request::get_hashmap_column;
+
+    use std::collections::HashMap;
+
+    #[test]
+    fn get_hashmap_column_passes() -> () {
+        let sut_table = HashMap::from([("test_column".to_owned(), "test_value".to_owned())]);
+
+        let result = get_hashmap_column(&sut_table, "test_column");
+        assert_eq!(result, "test_value");
+    }
+
+    #[test]
+    fn from_hashmap_passes() -> () {
+        let test_data: [(String, String); 8] = get_test_table();
+
+        let model = IssueInvoiceRequest::from(HashMap::from(test_data.clone()));
+        assert_eq!(model.date, test_data[0].1);
+        assert_eq!(model.description, test_data[1].1);
+        assert_eq!(model.client_country, test_data[2].1);
+        assert_eq!(model.client_nif, test_data[3].1);
+        assert_eq!(model.client_name, test_data[4].1);
+        assert_eq!(model.client_address, test_data[5].1);
+        assert_eq!(model.value, test_data[6].1);
+        assert_eq!(model.nif, test_data[7].1);
+    }
+
+    fn get_test_table() -> [(String, String); 8] {
+        [
+            ("date".to_owned(), "2022-08-10".to_owned()),
+            ("description".to_owned(), "An invoice for the work".to_owned()),
+            ("client_country".to_owned(), "REINO UNIDO".to_owned()),
+            ("client_nif".to_owned(), "12345678".to_owned()),
+            ("client_name".to_owned(), "iudgfs LLC".to_owned()),
+            ("client_address".to_owned(), "street of rust".to_owned()),
+            ("value".to_owned(), "1544.68".to_owned()),
+            ("nif".to_owned(), "87654321".to_owned()),
+        ]
+    }
 }
