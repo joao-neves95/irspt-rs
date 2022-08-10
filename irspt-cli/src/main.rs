@@ -42,11 +42,7 @@ async fn main() -> Result<()> {
     };
 
     if save_template {
-        if existing_model.is_some() {
-            invoice_template_store.update_template(&template)?;
-        } else {
-            invoice_template_store.add_template(&template)?;
-        }
+        invoice_template_store.update_template(DEFAULT_TEMPLATE_NAME, &invoice_request)?;
     }
 
     #[cfg(feature = "issue-invoice")]
