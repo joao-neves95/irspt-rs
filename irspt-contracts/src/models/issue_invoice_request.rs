@@ -34,6 +34,21 @@ impl From<HashMap<String, String>> for IssueInvoiceRequest {
     }
 }
 
+impl Into<HashMap<String, String>> for IssueInvoiceRequest {
+    fn into(self) -> HashMap<String, String> {
+        HashMap::from([
+            ("date".to_owned(), self.date),
+            ("description".to_owned(), self.description),
+            ("client_country".to_owned(), self.client_country),
+            ("client_nif".to_owned(), self.client_nif),
+            ("client_name".to_owned(), self.client_name),
+            ("client_address".to_owned(), self.client_address),
+            ("value".to_owned(), self.value),
+            ("nif".to_owned(), self.nif),
+        ])
+    }
+}
+
 fn get_hashmap_column(hash_map: &HashMap<String, String>, key: &str) -> String {
     hash_map.get(key).unwrap_or(&"".to_owned()).to_owned()
 }
@@ -68,10 +83,46 @@ mod tests {
         assert_eq!(model.nif, test_data[7].1);
     }
 
+    #[test]
+    fn to_hashmap_passes() -> () {
+        let test_data = IssueInvoiceRequest {
+            date: "dfgadfg".to_owned(),
+            client_address: "e567gtyn7uresdrgv".to_owned(),
+            client_country: "uk".to_owned(),
+            client_name: "adfgihuk".to_owned(),
+            client_nif: "897y87987y897b".to_owned(),
+            description: "5g6ep,.5e6go9u".to_owned(),
+            nif: "2349853450896".to_owned(),
+            value: "56474567.351".to_owned(),
+        };
+
+        let table: HashMap<String, String> = test_data.into();
+        assert_eq!(table.get_key_value("date").unwrap().1, &"dfgadfg");
+        assert_eq!(
+            table.get_key_value("client_address").unwrap().1,
+            &"e567gtyn7uresdrgv"
+        );
+        assert_eq!(table.get_key_value("client_country").unwrap().1, &"uk");
+        assert_eq!(table.get_key_value("client_name").unwrap().1, &"adfgihuk");
+        assert_eq!(
+            table.get_key_value("client_nif").unwrap().1,
+            &"897y87987y897b"
+        );
+        assert_eq!(
+            table.get_key_value("description").unwrap().1,
+            &"5g6ep,.5e6go9u"
+        );
+        assert_eq!(table.get_key_value("nif").unwrap().1, &"2349853450896");
+        assert_eq!(table.get_key_value("value").unwrap().1, &"56474567.351");
+    }
+
     fn get_test_table() -> [(String, String); 8] {
         [
             ("date".to_owned(), "2022-08-10".to_owned()),
-            ("description".to_owned(), "An invoice for the work".to_owned()),
+            (
+                "description".to_owned(),
+                "An invoice for the work".to_owned(),
+            ),
             ("client_country".to_owned(), "REINO UNIDO".to_owned()),
             ("client_nif".to_owned(), "12345678".to_owned()),
             ("client_name".to_owned(), "iudgfs LLC".to_owned()),
