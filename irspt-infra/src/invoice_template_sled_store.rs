@@ -37,7 +37,7 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
             return Ok(None);
         }
 
-        Ok(Some(IssueInvoiceRequest::from(&deserialize_from_bytes::<
+        Ok(Some(IssueInvoiceRequest::new(deserialize_from_bytes::<
             HashMap<String, String>,
         >(
             &raw_result.unwrap()
@@ -45,7 +45,7 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
     }
 
     fn add_template(&self, template_name: &str, model: &IssueInvoiceRequest) -> Result<()> {
-        let model_bytes = serialize_to_bytes::<HashMap<String, String>>(&model.into())?;
+        let model_bytes = serialize_to_bytes::<HashMap<String, String>>(&model.data)?;
 
         self.sled_db
             .db_ref()

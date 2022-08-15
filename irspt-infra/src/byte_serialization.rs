@@ -6,20 +6,19 @@ use rkyv::{
 };
 use sled::IVec;
 
-pub fn serialize_to_bytes<TModel>(model: &TModel) -> Result<IVec>
+pub fn serialize_to_bytes<T>(value: &T) -> Result<IVec>
 where
-    TModel: Serialize<AllocSerializer<512>>,
+    T: Serialize<AllocSerializer<512>>,
 {
-    Ok(sled::IVec::from(rkyv::to_bytes::<_, 512>(model)?.as_ref()))
+    Ok(sled::IVec::from(rkyv::to_bytes::<T, 512>(value)?.as_ref()))
 }
 
-pub fn deserialize_from_bytes<'a, TModel>(raw_result: &'a IVec) -> Result<TModel>
+pub fn deserialize_from_bytes<'a, T>(raw_result: &'a IVec) -> Result<T>
 where
-    TModel: Archive,
-    TModel::Archived:
-        'a + CheckBytes<DefaultValidator<'a>> + Deserialize<TModel, SharedDeserializeMap>,
+    T: Archive,
+    T::Archived: 'a + CheckBytes<DefaultValidator<'a>> + Deserialize<T, SharedDeserializeMap>,
 {
-    match rkyv::from_bytes::<TModel>(raw_result) {
+    match rkyv::from_bytes::<T>(raw_result) {
         Result::Ok(result) => Ok(result),
         Err(_) => Err(anyhow::anyhow!(
             "Byte deserialization error. Invalid struct."
@@ -34,35 +33,6 @@ mod tests {
     use irspt_contracts::models::IssueInvoiceRequest;
 
     use std::collections::HashMap;
-
-    #[test]
-    fn de_serialize_struct_passes() {
-        let model = IssueInvoiceRequest {
-            date: "2020-08-01".to_owned(),
-            description: "the service I did".to_owned(),
-            client_nif: "123".to_owned(),
-            client_name: "test inc.".to_owned(),
-            client_country: "usa".to_owned(),
-            client_address: "street 1".to_owned(),
-            value: "12345".to_owned(),
-            nif: "321".to_owned(),
-        };
-
-        let raw_bytes_res = serialize_to_bytes(&model);
-        assert!(raw_bytes_res.is_ok());
-
-        let deserialized_model_res =
-            deserialize_from_bytes::<IssueInvoiceRequest>(&raw_bytes_res.unwrap());
-        assert!(deserialized_model_res.as_ref().is_ok());
-
-        let deserialized_model = deserialized_model_res.as_ref().unwrap();
-        assert!(deserialized_model.value == model.value);
-        assert!(deserialized_model.date == model.date);
-        assert!(deserialized_model.description == model.description);
-        assert!(deserialized_model.nif == model.nif);
-        assert!(deserialized_model.client_name == model.client_name);
-        assert!(deserialized_model.client_nif == model.client_nif);
-    }
 
     #[test]
     fn de_serialize_int_passes() {
@@ -98,5 +68,33 @@ mod tests {
                 .1
                 == "97b6gng$&€€$$$"
         );
+    }
+
+    #[test]
+    fn de_serialize_hashmap_in_struct_passes() {
+        let mut model = IssueInvoiceRequest::new_empty();
+        model.set_date("2020-08-01".to_owned());
+        model.set_description("the service I did".to_owned());
+        model.set_client_nif("123".to_owned());
+        model.set_client_name("test inc.".to_owned());
+        model.set_client_country("usa".to_owned());
+        model.set_client_address("street 1".to_owned());
+        model.set_value("12345".to_owned());
+        model.set_nif("321".to_owned());
+
+        let raw_bytes_res = serialize_to_bytes::<HashMap<String, String>>(&model.data);
+        assert!(raw_bytes_res.is_ok());
+
+        let deserialized_model_res =
+            deserialize_from_bytes::<HashMap<String, String>>(&raw_bytes_res.unwrap());
+        assert!(deserialized_model_res.is_ok());
+
+        let deserialized_model = IssueInvoiceRequest::new(deserialized_model_res.unwrap());
+        assert!(deserialized_model.get_value() == model.get_value());
+        assert!(deserialized_model.get_date() == model.get_date());
+        assert!(deserialized_model.get_description() == model.get_description());
+        assert!(deserialized_model.get_nif() == model.get_nif());
+        assert!(deserialized_model.get_client_name() == model.get_client_name());
+        assert!(deserialized_model.get_client_nif() == model.get_client_nif());
     }
 }

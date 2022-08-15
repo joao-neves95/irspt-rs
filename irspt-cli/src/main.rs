@@ -48,7 +48,7 @@ async fn main() -> Result<()> {
         )?;
 
         IrsptApiAuth::new(&irspt_api)
-            .authenticate_async(&invoice_request.nif, &password)
+            .authenticate_async(&invoice_request.get_nif(), &password)
             .await?;
 
         IrsptApiInvoices::new(&irspt_api)

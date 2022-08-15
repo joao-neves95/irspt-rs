@@ -1,120 +1,161 @@
 use std::collections::HashMap;
 
-use bytecheck::CheckBytes;
-use rkyv::{Archive, Deserialize, Serialize};
-
-#[derive(Debug, Archive, Deserialize, Serialize)]
-#[archive_attr(derive(CheckBytes))]
 pub struct IssueInvoiceRequest {
-    pub date: String,
-    pub description: String,
+    pub data: HashMap<String, String>,
+    pub(crate) default_string_value: String,
+}
 
-    pub client_country: String,
-    pub client_nif: String,
-    pub client_name: String,
-    pub client_address: String,
+impl IssueInvoiceRequest {
+    pub fn new(data: HashMap<String, String>) -> Self {
+        IssueInvoiceRequest {
+            data,
+            default_string_value: String::new(),
+        }
+    }
 
-    pub value: String,
-    pub nif: String,
+    pub fn new_empty() -> Self {
+        IssueInvoiceRequest {
+            data: HashMap::new(),
+            default_string_value: String::new(),
+        }
+    }
+
+    pub fn get_date(&self) -> &String {
+        get_model_data_value(self, "date")
+    }
+
+    pub fn set_date(&mut self, value: String) {
+        set_model_data_value(self, "date", value);
+    }
+
+    pub fn get_description(&self) -> &String {
+        get_model_data_value(self, "description")
+    }
+
+    pub fn set_description(&mut self, value: String) {
+        set_model_data_value(self, "description", value);
+    }
+
+    pub fn get_client_country(&self) -> &String {
+        get_model_data_value(&self, "client_country")
+    }
+
+    pub fn set_client_country(&mut self, value: String) {
+        set_model_data_value(self, "client_country", value);
+    }
+
+    pub fn get_client_nif(&self) -> &String {
+        get_model_data_value(self, "client_nif")
+    }
+
+    pub fn set_client_nif(&mut self, value: String) {
+        set_model_data_value(self, "client_nif", value);
+    }
+
+    pub fn get_client_name(&self) -> &String {
+        get_model_data_value(self, "client_name")
+    }
+
+    pub fn set_client_name(&mut self, value: String) {
+        set_model_data_value(self, "client_name", value);
+    }
+
+    pub fn get_client_address(&self) -> &String {
+        get_model_data_value(self, "client_address")
+    }
+
+    pub fn set_client_address(&mut self, value: String) {
+        set_model_data_value(self, "client_address", value);
+    }
+
+    pub fn get_value(&self) -> &String {
+        get_model_data_value(self, "value")
+    }
+
+    pub fn set_value(&mut self, value: String) {
+        set_model_data_value(self, "value", value);
+    }
+
+    pub fn get_nif(&self) -> &String {
+        get_model_data_value(self, "nif")
+    }
+
+    pub fn set_nif(&mut self, value: String) {
+        set_model_data_value(self, "nif", value);
+    }
+}
+
+fn get_model_data_value<'a>(model: &'a IssueInvoiceRequest, key: &str) -> &'a String {
+    model.data.get(key).unwrap_or(&model.default_string_value)
+}
+
+fn set_model_data_value<'a>(
+    model: &'a mut IssueInvoiceRequest,
+    key: &str,
+    new_value: String,
+) -> () {
+    model.data.insert(key.to_owned(), new_value);
 }
 
 impl From<&HashMap<String, String>> for IssueInvoiceRequest {
     fn from(hash_map: &HashMap<String, String>) -> Self {
-        IssueInvoiceRequest {
-            // TODO: Un-hardcode strings.
-            date: get_hashmap_column(&hash_map, "date"),
-            description: get_hashmap_column(&hash_map, "description"),
-            client_country: get_hashmap_column(&hash_map, "client_country"),
-            client_nif: get_hashmap_column(&hash_map, "client_nif"),
-            client_name: get_hashmap_column(&hash_map, "client_name"),
-            client_address: get_hashmap_column(&hash_map, "client_address"),
-            value: get_hashmap_column(&hash_map, "value"),
-            nif: get_hashmap_column(&hash_map, "nif"),
-        }
+        IssueInvoiceRequest::new(hash_map.to_owned())
     }
 }
 
 impl Into<HashMap<String, String>> for &IssueInvoiceRequest {
     fn into(self) -> HashMap<String, String> {
-        HashMap::from([
-            // TODO: Un-hardcode strings.
-            ("date".to_owned(), self.date.to_owned()),
-            ("description".to_owned(), self.description.to_owned()),
-            ("client_country".to_owned(), self.client_country.to_owned()),
-            ("client_nif".to_owned(), self.client_nif.to_owned()),
-            ("client_name".to_owned(), self.client_name.to_owned()),
-            ("client_address".to_owned(), self.client_address.to_owned()),
-            ("value".to_owned(), self.value.to_owned()),
-            ("nif".to_owned(), self.nif.to_owned()),
-        ])
+        self.data.to_owned()
     }
-}
-
-fn get_hashmap_column(hash_map: &HashMap<String, String>, key: &str) -> String {
-    hash_map.get(key).unwrap_or(&"".to_owned()).to_owned()
 }
 
 #[cfg(test)]
 mod tests {
-    use super::IssueInvoiceRequest;
-    use crate::models::issue_invoice_request::get_hashmap_column;
+    use crate::models::{
+        issue_invoice_request::{get_model_data_value, set_model_data_value},
+        IssueInvoiceRequest,
+    };
 
     use std::collections::HashMap;
 
     #[test]
     fn get_hashmap_column_passes() -> () {
-        let sut_table = HashMap::from([("test_column".to_owned(), "test_value".to_owned())]);
+        let model = IssueInvoiceRequest::new(HashMap::from(get_small_test_table()));
 
-        let result = get_hashmap_column(&sut_table, "test_column");
+        let result = get_model_data_value(&model, "test_column");
         assert_eq!(result, "test_value");
     }
 
     #[test]
-    fn from_hashmap_passes() -> () {
-        let test_data: [(String, String); 8] = get_test_table();
+    fn set_hashmap_column_passes() -> () {
+        let mut model = IssueInvoiceRequest::new(HashMap::from(get_small_test_table()));
+        set_model_data_value(&mut model, "test_column", "new_test_value".to_owned());
 
-        let model = IssueInvoiceRequest::from(&HashMap::from(test_data.clone()));
-        assert_eq!(model.date, test_data[0].1);
-        assert_eq!(model.description, test_data[1].1);
-        assert_eq!(model.client_country, test_data[2].1);
-        assert_eq!(model.client_nif, test_data[3].1);
-        assert_eq!(model.client_name, test_data[4].1);
-        assert_eq!(model.client_address, test_data[5].1);
-        assert_eq!(model.value, test_data[6].1);
-        assert_eq!(model.nif, test_data[7].1);
+        assert_eq!(model.data.get("test_column").unwrap(), "new_test_value");
     }
 
     #[test]
     fn to_hashmap_passes() -> () {
-        let test_data = IssueInvoiceRequest {
-            date: "dfgadfg".to_owned(),
-            client_address: "e567gtyn7uresdrgv".to_owned(),
-            client_country: "uk".to_owned(),
-            client_name: "adfgihuk".to_owned(),
-            client_nif: "897y87987y897b".to_owned(),
-            description: "5g6ep,.5e6go9u".to_owned(),
-            nif: "2349853450896".to_owned(),
-            value: "56474567.351".to_owned(),
-        };
+        let test_data = IssueInvoiceRequest::new(HashMap::from(get_test_table()));
 
         let table: HashMap<String, String> = (&test_data).into();
-        assert_eq!(table.get_key_value("date").unwrap().1, &"dfgadfg");
+        assert_eq!(table.get_key_value("date").unwrap().1, &"2022-08-10");
         assert_eq!(
             table.get_key_value("client_address").unwrap().1,
-            &"e567gtyn7uresdrgv"
+            &"street of rust"
         );
-        assert_eq!(table.get_key_value("client_country").unwrap().1, &"uk");
-        assert_eq!(table.get_key_value("client_name").unwrap().1, &"adfgihuk");
         assert_eq!(
-            table.get_key_value("client_nif").unwrap().1,
-            &"897y87987y897b"
+            table.get_key_value("client_country").unwrap().1,
+            &"REINO UNIDO"
         );
+        assert_eq!(table.get_key_value("client_name").unwrap().1, &"iudgfs LLC");
+        assert_eq!(table.get_key_value("client_nif").unwrap().1, &"12345678");
         assert_eq!(
             table.get_key_value("description").unwrap().1,
-            &"5g6ep,.5e6go9u"
+            &"An invoice for the work"
         );
-        assert_eq!(table.get_key_value("nif").unwrap().1, &"2349853450896");
-        assert_eq!(table.get_key_value("value").unwrap().1, &"56474567.351");
+        assert_eq!(table.get_key_value("nif").unwrap().1, &"87654321");
+        assert_eq!(table.get_key_value("value").unwrap().1, &"1544.68");
     }
 
     fn get_test_table() -> [(String, String); 8] {
@@ -131,5 +172,9 @@ mod tests {
             ("value".to_owned(), "1544.68".to_owned()),
             ("nif".to_owned(), "87654321".to_owned()),
         ]
+    }
+
+    fn get_small_test_table() -> [(String, String); 1] {
+        [("test_column".to_owned(), "test_value".to_owned())]
     }
 }

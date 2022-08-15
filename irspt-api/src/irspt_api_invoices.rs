@@ -25,14 +25,14 @@ impl<'a> IrsptApiInvoices<'a> {
 
     // TODO: Separate this into multiple functions and then create a Builder pattern.
     pub async fn issue_invoice_async(&self, request_model: &IssueInvoiceRequest) -> Result<()> {
-        let is_portuguese_client = request_model.client_country == "PORTUGAL";
+        let is_portuguese_client = request_model.get_client_country() == "PORTUGAL";
 
         // TODO: Un-hardcode url.
         self.irspt_api
             .web_driver
             .goto(format!(
                 "https://irs.portaldasfinancas.gov.pt/recibos/portal/emitirfatura#?modoConsulta=Prestador&nifPrestadorServicos={}&isAutoSearchOn=on",
-                &request_model.nif
+                request_model.get_nif()
             ))
             .await?;
 
@@ -41,7 +41,7 @@ impl<'a> IrsptApiInvoices<'a> {
         let _ = &self
             .irspt_api
             .web_driver
-            .set_input_value_by_prop_value_async("name", "dataPrestacao", &request_model.date)
+            .set_input_value_by_prop_value_async("name", "dataPrestacao", request_model.get_date())
             .await?;
 
         let _ = &self
@@ -59,7 +59,10 @@ impl<'a> IrsptApiInvoices<'a> {
             .web_driver
             .find_by_prop_value_async("select", "name", "pais")
             .await?
-            .select_option_by_prop_value_containing_async("label", &request_model.client_country)
+            .select_option_by_prop_value_containing_async(
+                "label",
+                request_model.get_client_country(),
+            )
             .await?;
 
         let _ = &self
@@ -72,7 +75,7 @@ impl<'a> IrsptApiInvoices<'a> {
                 } else {
                     "nifEstrangeiro"
                 },
-                &request_model.client_nif,
+                request_model.get_client_nif(),
             )
             .await?;
 
@@ -82,7 +85,7 @@ impl<'a> IrsptApiInvoices<'a> {
             .set_input_value_by_prop_value_async(
                 "name",
                 "nomeAdquirente",
-                &request_model.client_name,
+                request_model.get_client_name(),
             )
             .await?;
 
@@ -93,7 +96,7 @@ impl<'a> IrsptApiInvoices<'a> {
                 .set_input_value_by_prop_value_async(
                     "name",
                     "moradaAdquirente",
-                    &request_model.client_address,
+                    request_model.get_client_address(),
                 )
                 .await;
         }
@@ -125,14 +128,14 @@ impl<'a> IrsptApiInvoices<'a> {
             .set_textarea_value_by_prop_value_async(
                 "name",
                 "servicoPrestado",
-                &request_model.description,
+                request_model.get_description(),
             )
             .await?;
 
         let _ = &self
             .irspt_api
             .web_driver
-            .set_input_value_by_prop_value_async("name", "valorBase", &request_model.value)
+            .set_input_value_by_prop_value_async("name", "valorBase", request_model.get_value())
             .await?;
 
         let _ = &self
