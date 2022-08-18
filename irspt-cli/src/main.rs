@@ -1,10 +1,7 @@
 mod prompt;
 mod validators;
 use irspt_api::IrsptApiInvoices;
-use irspt_core::{
-    models::{InvoiceTemplate, IssueInvoiceRequest},
-    traits::InvoiceTemplateStore,
-};
+use irspt_contracts::{models::IssueInvoiceRequest, traits::InvoiceTemplateStore};
 use irspt_infra::{InvoiceTemplateSledStore, SledDb};
 
 use std::{thread, time};
@@ -21,12 +18,9 @@ async fn main() -> Result<()> {
     let invoice_template_store = InvoiceTemplateSledStore::new(&mut sled_db)?;
 
     let existing_model = match invoice_template_store.get_template(DEFAULT_TEMPLATE_NAME) {
-        Err(_) => delete_template_if_invalid_prompt(&invoice_template_store)?,
+        anyhow::Result::Ok(model) => model,
 
-        anyhow::Result::Ok(result) => match result {
-            Some(template) => Some(template.invoice_model),
-            None => None,
-        },
+        Err(_) => delete_template_if_invalid_prompt(&invoice_template_store)?,
     };
 
     let invoice_request = prompt_invoice_request(&existing_model)?;
@@ -36,17 +30,8 @@ async fn main() -> Result<()> {
         .with_help_message("Your password will not be stored.")
         .prompt()?;
 
-    let template = InvoiceTemplate {
-        name: DEFAULT_TEMPLATE_NAME.to_owned(),
-        invoice_model: invoice_request,
-    };
-
     if save_template {
-        if existing_model.is_some() {
-            invoice_template_store.update_template(&template)?;
-        } else {
-            invoice_template_store.add_template(&template)?;
-        }
+        invoice_template_store.update_template(DEFAULT_TEMPLATE_NAME, &invoice_request)?;
     }
 
     #[cfg(feature = "issue-invoice")]
@@ -63,11 +48,11 @@ async fn main() -> Result<()> {
         )?;
 
         IrsptApiAuth::new(&irspt_api)
-            .authenticate_async(&template.invoice_model.nif, &password)
+            .authenticate_async(&invoice_request.get_nif(), &password)
             .await?;
 
         IrsptApiInvoices::new(&irspt_api)
-            .issue_invoice_async(&template.invoice_model)
+            .issue_invoice_async(&invoice_request)
             .await?;
 
         thread::sleep(time::Duration::from_secs(5));

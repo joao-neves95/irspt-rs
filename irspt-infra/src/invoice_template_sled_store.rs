@@ -2,7 +2,9 @@ use crate::{
     byte_serialization::{deserialize_from_bytes, serialize_to_bytes},
     sled_db::SledDb,
 };
-use irspt_core::{models::InvoiceTemplate, traits::InvoiceTemplateStore};
+use irspt_contracts::{models::IssueInvoiceRequest, traits::InvoiceTemplateStore};
+
+use std::collections::HashMap;
 
 use anyhow::{Ok, Result};
 
@@ -23,7 +25,7 @@ impl<'a> InvoiceTemplateSledStore<'a> {
 }
 
 impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
-    fn get_template(&self, template_name: &str) -> Result<Option<InvoiceTemplate>> {
+    fn get_template(&self, template_name: &str) -> Result<Option<IssueInvoiceRequest>> {
         let raw_result = self
             .sled_db
             .db_ref()
@@ -35,59 +37,29 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
             return Ok(None);
         }
 
-        let template = deserialize_from_bytes::<InvoiceTemplate>(&raw_result.unwrap())?;
-
-        Ok(Some(template))
+        Ok(Some(IssueInvoiceRequest::new(deserialize_from_bytes::<
+            HashMap<String, String>,
+        >(
+            &raw_result.unwrap()
+        )?)))
     }
 
-    fn add_template(&self, model: &InvoiceTemplate) -> Result<()> {
-        let model_bytes = serialize_to_bytes(model)?;
+    fn add_template(&self, template_name: &str, model: &IssueInvoiceRequest) -> Result<()> {
+        let model_bytes = serialize_to_bytes::<HashMap<String, String>>(&model.data)?;
 
         self.sled_db
             .db_ref()
             .unwrap()
             .open_tree(INVOICE_TEAMPLATES_TABLE_NAME)?
-            .insert(&model.name, model_bytes)?;
+            .insert(template_name, &model_bytes)?;
 
         Ok(())
     }
 
-    fn update_template(&self, model: &InvoiceTemplate) -> Result<Option<InvoiceTemplate>> {
-        let raw_updated_result = self
-            .sled_db
-            .db_ref()
-            .unwrap()
-            .open_tree(INVOICE_TEAMPLATES_TABLE_NAME)?
-            .update_and_fetch(&model.name, |old_template| {
-                if old_template.is_none() {
-                    return None;
-                }
+    fn update_template(&self, template_name: &str, model: &IssueInvoiceRequest) -> Result<()> {
+        self.add_template(template_name, model)?;
 
-                let mut template = deserialize_from_bytes::<InvoiceTemplate>(&sled::IVec::from(
-                    old_template.unwrap(),
-                ))
-                .unwrap();
-
-                template.invoice_model.nif = model.invoice_model.nif.to_owned();
-                template.invoice_model.value = model.invoice_model.value.to_owned();
-                template.invoice_model.description = model.invoice_model.description.to_owned();
-                template.invoice_model.client_nif = model.invoice_model.client_nif.to_owned();
-                template.invoice_model.client_name = model.invoice_model.client_name.to_owned();
-                template.invoice_model.client_address =
-                    model.invoice_model.client_address.to_owned();
-                template.invoice_model.client_country =
-                    model.invoice_model.client_country.to_owned();
-
-                Some(serialize_to_bytes(&template).unwrap())
-            })?;
-
-        if raw_updated_result.is_none() {
-            return Ok(None);
-        }
-
-        Ok(Some(deserialize_from_bytes::<InvoiceTemplate>(
-            &sled::IVec::from(raw_updated_result.unwrap()),
-        )?))
+        Ok(())
     }
 
     fn remove_template(&self, template_name: &str) -> Result<()> {
@@ -95,7 +67,7 @@ impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
             .db_ref()
             .unwrap()
             .open_tree(INVOICE_TEAMPLATES_TABLE_NAME)?
-            .remove(&template_name)?;
+            .remove(template_name)?;
 
         Ok(())
     }
