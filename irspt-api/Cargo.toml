@@ -9,4 +9,4 @@ edition = "2021"
 irspt-contracts = { path = "../irspt-contracts/" }
 anyhow = "1.0"
 async-trait = "0.1"
-thirtyfour = "0.30"
+thirtyfour = "0.31"
