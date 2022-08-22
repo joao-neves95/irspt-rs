@@ -2,7 +2,7 @@ use anyhow::{Error, Result};
 use thirtyfour::{DesiredCapabilities, WebDriver};
 
 pub struct IrsptApi {
-    pub web_driver: WebDriver,
+    pub(crate) web_driver: WebDriver,
 }
 
 impl IrsptApi {

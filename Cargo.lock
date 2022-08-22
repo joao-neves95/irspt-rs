@@ -526,7 +526,7 @@ dependencies = [
 
 [[package]]
 name = "irspt-api"
-version = "1.0.1"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -536,7 +536,7 @@ dependencies = [
 
 [[package]]
 name = "irspt-cli"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "chrono",
@@ -549,7 +549,7 @@ dependencies = [
 
 [[package]]
 name = "irspt-contracts"
-version = "1.0.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "async-trait",
