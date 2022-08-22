@@ -4,6 +4,7 @@
 - Refactoring: Now using traits over multiple structs for the `irspt-api` structure.\
   This is a breaking change, but no one uses this program nor its libs, so the versions were
   all regressed to pre-public denote the alpha state and that breaking changes can happen.
+- Updated package dependencies.
 
 ## v0.2.0
 - Added support for multiple template schema versions.\
