@@ -1,6 +1,5 @@
 mod prompt;
 mod validators;
-use irspt_api::IrsptApiInvoices;
 use irspt_contracts::{models::IssueInvoiceRequest, traits::InvoiceTemplateStore};
 use irspt_infra::{InvoiceTemplateSledStore, SledDb};
 
@@ -37,7 +36,8 @@ async fn main() -> Result<()> {
     #[cfg(feature = "issue-invoice")]
     {
         use inquire::{required, Password};
-        use irspt_api::{IrsptApi, IrsptApiAuth};
+        use irspt_api::IrsptApi;
+        use irspt_contracts::traits::{IrsptApiAuth, IrsptApiInvoices};
 
         let password = Password::new("Password:")
             .with_validator(required!())
@@ -47,13 +47,11 @@ async fn main() -> Result<()> {
             "ERROR: Issue while trying to connect to the WebDriver server. Make sure it's running.",
         )?;
 
-        IrsptApiAuth::new(&irspt_api)
+        irspt_api
             .authenticate_async(&invoice_request.get_nif(), &password)
             .await?;
 
-        IrsptApiInvoices::new(&irspt_api)
-            .issue_invoice_async(&invoice_request)
-            .await?;
+        irspt_api.issue_invoice_async(&invoice_request).await?;
 
         thread::sleep(time::Duration::from_secs(5));
         irspt_api.close_async().await?;

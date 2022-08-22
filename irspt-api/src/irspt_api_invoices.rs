@@ -3,32 +3,23 @@ use crate::extensions::WebDriverExtensions;
 use crate::extensions::WebElementExtensions;
 use crate::IrsptApi;
 use irspt_contracts::models::IssueInvoiceRequest;
+use irspt_contracts::traits::IrsptApiInvoices;
 
 use std::thread;
 use std::time;
 
 use anyhow::Result;
+use async_trait::async_trait;
 use thirtyfour::By;
 
-pub struct IrsptApiInvoices<'a> {
-    irspt_api: &'a IrsptApi,
-}
-
-impl<'a> IrsptApiInvoices<'a> {
-    pub fn new(irspt_api: &'a IrsptApi) -> IrsptApiInvoices {
-        IrsptApiInvoices { irspt_api }
-    }
-
-    pub fn get_reference_data() -> () {
-        todo!()
-    }
-
-    // TODO: Separate this into multiple functions and then create a Builder pattern.
-    pub async fn issue_invoice_async(&self, request_model: &IssueInvoiceRequest) -> Result<()> {
+#[async_trait]
+impl IrsptApiInvoices for IrsptApi {
+    // TODO: Separate this into a Builder pattern.
+    async fn issue_invoice_async(&self, request_model: &IssueInvoiceRequest) -> Result<()> {
         let is_portuguese_client = request_model.get_client_country() == "PORTUGAL";
 
         // TODO: Un-hardcode url.
-        self.irspt_api
+        self
             .web_driver
             .goto(format!(
                 "https://irs.portaldasfinancas.gov.pt/recibos/portal/emitirfatura#?modoConsulta=Prestador&nifPrestadorServicos={}&isAutoSearchOn=on",
@@ -39,13 +30,11 @@ impl<'a> IrsptApiInvoices<'a> {
         thread::sleep(time::Duration::from_secs(1));
 
         let _ = &self
-            .irspt_api
             .web_driver
             .set_input_value_by_prop_value_async("name", "dataPrestacao", request_model.get_date())
             .await?;
 
         let _ = &self
-            .irspt_api
             .web_driver
             .find_by_prop_value_async("select", "name", "tipoRecibo")
             .await?
@@ -55,7 +44,6 @@ impl<'a> IrsptApiInvoices<'a> {
         thread::sleep(time::Duration::from_millis(500));
 
         let _ = &self
-            .irspt_api
             .web_driver
             .find_by_prop_value_async("select", "name", "pais")
             .await?
@@ -66,7 +54,6 @@ impl<'a> IrsptApiInvoices<'a> {
             .await?;
 
         let _ = &self
-            .irspt_api
             .web_driver
             .set_input_value_by_prop_value_async(
                 "name",
@@ -80,7 +67,6 @@ impl<'a> IrsptApiInvoices<'a> {
             .await?;
 
         let _ = &self
-            .irspt_api
             .web_driver
             .set_input_value_by_prop_value_async(
                 "name",
@@ -91,7 +77,6 @@ impl<'a> IrsptApiInvoices<'a> {
 
         if is_portuguese_client {
             let _ = &self
-                .irspt_api
                 .web_driver
                 .set_input_value_by_prop_value_async(
                     "name",
@@ -102,7 +87,6 @@ impl<'a> IrsptApiInvoices<'a> {
         }
 
         let _ = &self
-            .irspt_api
             .web_driver
             .find_by_props_value_async(
                 "input",
@@ -123,7 +107,6 @@ impl<'a> IrsptApiInvoices<'a> {
             .await?;
 
         let _ = &self
-            .irspt_api
             .web_driver
             .set_textarea_value_by_prop_value_async(
                 "name",
@@ -133,13 +116,11 @@ impl<'a> IrsptApiInvoices<'a> {
             .await?;
 
         let _ = &self
-            .irspt_api
             .web_driver
             .set_input_value_by_prop_value_async("name", "valorBase", request_model.get_value())
             .await?;
 
         let _ = &self
-            .irspt_api
             .web_driver
             .find_by_prop_value_async("select", "name", "regimeIva")
             .await?
@@ -151,7 +132,6 @@ impl<'a> IrsptApiInvoices<'a> {
             .await?;
 
         let _ = &self
-            .irspt_api
             .web_driver
             .find_by_prop_value_async("select", "name", "regimeIncidenciaIrs")
             .await?
@@ -163,7 +143,6 @@ impl<'a> IrsptApiInvoices<'a> {
             .await?;
 
         let _ = &self
-            .irspt_api
             .web_driver
             .find(By::ClassName("fixed-header"))
             .await?
@@ -173,7 +152,6 @@ impl<'a> IrsptApiInvoices<'a> {
             .await?;
 
         let _ = &self
-            .irspt_api
             .web_driver
             .find(By::Id("emitirModal"))
             .await?
