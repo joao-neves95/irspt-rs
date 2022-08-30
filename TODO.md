@@ -1,11 +1,12 @@
 # TODO
 
+- Auto-run the webdriver client at startup, if needed.
+- Auto-install the webdriver client, if needed.
 - Add support for dynamic multi-options (reference data).
 - Un-hardcode strings with embedded resources.
+- Refactor the prompt. SoC.
 - Add tests to WebDriverExtensions.
 - Add tests to WebElementExtensions.
-- Refactor the APIs.
-- Refactor the prompt.
 - Add tests to the CLI.
-- Add error handling.
+- Add more error handling.
 - Add support for multiple templates.
