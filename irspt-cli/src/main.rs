@@ -1,6 +1,6 @@
 mod prompt;
 mod validators;
-use irspt_contracts::{models::IssueInvoiceRequest, traits::InvoiceTemplateStore};
+use irspt_contracts::{models::IssueInvoiceRequest, traits::TInvoiceTemplateStore};
 use irspt_infra::{InvoiceTemplateSledStore, SledDb};
 
 use std::{thread, time};
@@ -37,7 +37,7 @@ async fn main() -> Result<()> {
     {
         use inquire::{required, Password};
         use irspt_api::IrsptApi;
-        use irspt_contracts::traits::{IrsptApiAuth, IrsptApiInvoices};
+        use irspt_contracts::traits::{TIrsptApiAuth, TIrsptApiInvoices};
 
         let password = Password::new("Password:")
             .with_validator(required!())
@@ -61,7 +61,7 @@ async fn main() -> Result<()> {
 }
 
 fn delete_template_if_invalid_prompt<'a>(
-    invoice_template_store: &impl InvoiceTemplateStore<'a>,
+    invoice_template_store: &impl TInvoiceTemplateStore<'a>,
 ) -> Result<Option<IssueInvoiceRequest>> {
     let delete_template = Confirm::new(
         "ERROR: Your template data was corrupted. Delete the existing one to create a new one?",

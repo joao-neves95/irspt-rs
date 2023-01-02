@@ -7,4 +7,6 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
+strum = { version = "0.24", features = ["derive"] }
+strum_macros = "0.24"
 async-trait = "0.1"
