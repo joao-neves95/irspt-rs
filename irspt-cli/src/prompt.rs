@@ -16,7 +16,7 @@ pub fn prompt_invoice_request(
     input.set_date(
         DateSelect::new("Service date:")
             .with_week_start(chrono::Weekday::Mon)
-            .with_default(chrono::Local::today().naive_local())
+            .with_default(chrono::Local::now().naive_local().date())
             .prompt()?
             .format("%Y-%m-%d")
             .to_string(),
