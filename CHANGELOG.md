@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v0.3.1
+- Updated multiple dependencies.
+
 ## v0.3.0
 - Refactoring: Now using traits over multiple structs for the `irspt-api` structure.\
   This is a breaking change, but no one uses this program nor its libs, so the versions were
