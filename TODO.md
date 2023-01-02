@@ -1,8 +1,9 @@
 # TODO
 
 - Auto-run the webdriver client at startup, if needed.
-- Auto-install the webdriver client, if needed.
 - Add support for dynamic multi-options (reference data).
+- Auto-install the webdriver client, if needed.
+- Add a settings menu.
 - Un-hardcode strings with embedded resources.
 - Refactor the prompt. SoC.
 - Add tests to WebDriverExtensions.
