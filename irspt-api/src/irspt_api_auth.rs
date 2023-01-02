@@ -1,5 +1,5 @@
 use crate::{extensions::WebDriverExtensions, IrsptApi};
-use irspt_contracts::traits::IrsptApiAuth;
+use irspt_contracts::traits::TIrsptApiAuth;
 
 use std::{thread, time};
 
@@ -8,7 +8,7 @@ use async_trait::async_trait;
 use thirtyfour::By;
 
 #[async_trait]
-impl IrsptApiAuth for IrsptApi {
+impl TIrsptApiAuth for IrsptApi {
     async fn authenticate_async(&self, nif: &str, password: &str) -> Result<()> {
         // TODO: Un-hardcode url.
         self.web_driver

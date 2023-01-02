@@ -2,7 +2,7 @@ use crate::{
     byte_serialization::{deserialize_from_bytes, serialize_to_bytes},
     sled_db::SledDb,
 };
-use irspt_contracts::{models::IssueInvoiceRequest, traits::InvoiceTemplateStore};
+use irspt_contracts::{models::IssueInvoiceRequest, traits::TInvoiceTemplateStore};
 
 use std::collections::HashMap;
 
@@ -24,7 +24,7 @@ impl<'a> InvoiceTemplateSledStore<'a> {
     }
 }
 
-impl<'a> InvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
+impl<'a> TInvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
     fn get_template(&self, template_name: &str) -> Result<Option<IssueInvoiceRequest>> {
         let raw_result = self
             .sled_db

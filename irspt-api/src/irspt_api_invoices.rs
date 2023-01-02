@@ -3,7 +3,7 @@ use crate::extensions::WebDriverExtensions;
 use crate::extensions::WebElementExtensions;
 use crate::IrsptApi;
 use irspt_contracts::models::IssueInvoiceRequest;
-use irspt_contracts::traits::IrsptApiInvoices;
+use irspt_contracts::traits::TIrsptApiInvoices;
 
 use std::thread;
 use std::time;
@@ -13,7 +13,7 @@ use async_trait::async_trait;
 use thirtyfour::By;
 
 #[async_trait]
-impl IrsptApiInvoices for IrsptApi {
+impl TIrsptApiInvoices for IrsptApi {
     // TODO: Separate this into a Builder pattern.
     async fn issue_invoice_async(&self, request_model: &IssueInvoiceRequest) -> Result<()> {
         let is_portuguese_client = request_model.get_client_country() == "PORTUGAL";
