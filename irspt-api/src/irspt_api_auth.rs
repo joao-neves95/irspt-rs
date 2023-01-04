@@ -9,7 +9,7 @@ use thirtyfour::By;
 
 #[async_trait]
 impl TIrsptApiAuth for IrsptApi {
-    async fn authenticate_async(&self, nif: &str, password: &str) -> Result<()> {
+    async fn authenticate_async(&self, nif: &str, password: &str) -> Result<&Self> {
         // TODO: Un-hardcode url.
         self.web_driver
             // .goto("https://www.acesso.gov.pt/v2/loginForm?partID=PFAP&path=/geral/dashboard")
@@ -34,6 +34,6 @@ impl TIrsptApiAuth for IrsptApi {
 
         thread::sleep(time::Duration::from_secs(2));
 
-        Ok(())
+        Ok(self)
     }
 }

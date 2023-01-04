@@ -1,11 +1,10 @@
 mod prompt;
 mod validators;
+
 use irspt_contracts::{models::IssueInvoiceRequest, traits::TInvoiceTemplateStore};
 use irspt_infra::{InvoiceTemplateSledStore, SledDb};
 
-use std::{thread, time};
-
-use anyhow::{Context, Result};
+use anyhow::Result;
 use inquire::Confirm;
 use prompt::prompt_invoice_request;
 
@@ -35,25 +34,45 @@ async fn main() -> Result<()> {
 
     #[cfg(feature = "issue-invoice")]
     {
-        use inquire::{required, Password};
-        use irspt_api::IrsptApi;
-        use irspt_contracts::traits::{TIrsptApiAuth, TIrsptApiInvoices};
+        use std::thread;
+        use std::time;
 
-        let password = Password::new("Password:")
-            .with_validator(required!())
-            .prompt()?;
+        use anyhow::Context;
+        use inquire::{required, Password};
+
+        use irspt_api::IrsptApi;
+        use irspt_contracts::{
+            enums::{InstanceState, WebdriverType},
+            traits::{TIrsptApiAuth, TIrsptApiInvoices, TWebdriverManager},
+        };
+        use irspt_infra::WebdriverManager;
+
+        let webdriver_status =
+            WebdriverManager::new(WebdriverType::Gecko).start_instance_if_needed()?;
 
         let irspt_api = IrsptApi::new().await.context(
             "ERROR: Issue while trying to connect to the WebDriver server. Make sure it's running.",
         )?;
 
+        let password = Password::new("Password:")
+            .with_validator(required!())
+            .prompt()?;
+
         irspt_api
             .authenticate_async(&invoice_request.get_nif(), &password)
+            .await?
+            .issue_invoice_async(&invoice_request)
             .await?;
 
-        irspt_api.issue_invoice_async(&invoice_request).await?;
-
         thread::sleep(time::Duration::from_secs(5));
+
+        match webdriver_status {
+            InstanceState::Started(mut process) => {
+                process.kill()?;
+            }
+            _ => (), // Nothing to do.
+        }
+
         irspt_api.close_async().await?;
     }
 

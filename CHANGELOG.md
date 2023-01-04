@@ -1,7 +1,8 @@
 # CHANGELOG
 
-## v0.3.1
-- Updated multiple dependencies.
+## v0.4.0
+- [feat]: Auto-run the webdriver at startup, if needed.
+- [chore]: Updated multiple dependencies.
 
 ## v0.3.0
 - Refactoring: Now using traits over multiple structs for the `irspt-api` structure.\

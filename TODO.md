@@ -1,6 +1,6 @@
 # TODO
 
-- Auto-run the webdriver client at startup, if needed.
+- Refactor the non-presentation code in `main` into a separate project for domain logic.
 - Add support for dynamic multi-options (reference data).
 - Auto-install the webdriver client, if needed.
 - Add a settings menu.
