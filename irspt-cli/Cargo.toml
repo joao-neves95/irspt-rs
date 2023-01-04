@@ -7,9 +7,11 @@ edition = "2021"
 
 [features]
 issue-invoice = []
+child-stdout-off = []
 
 default = [
-  "issue-invoice"
+  "issue-invoice",
+  "child-stdout-off"
 ]
 
 [dependencies]

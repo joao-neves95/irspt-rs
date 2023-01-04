@@ -1,12 +1,12 @@
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 use anyhow::{anyhow, Ok, Result};
+use sysinfo::{ProcessRefreshKind, RefreshKind, System, SystemExt};
+
 use irspt_contracts::{
     enums::{InstanceState, WebdriverType},
     traits::TWebdriverManager,
 };
-
-use sysinfo::{ProcessRefreshKind, RefreshKind, System, SystemExt};
 
 pub struct WebdriverManager {
     webdriver_type: WebdriverType,
@@ -30,16 +30,23 @@ impl TWebdriverManager for WebdriverManager {
                     .refresh_processes_specifics(ProcessRefreshKind::new());
 
                 let webdriver_type_str = &self.webdriver_type.to_string();
-                let proc = self.sys_info.processes_by_name(&webdriver_type_str).next();
-
                 let run_driver_error_message = format!(
                     "Error while trying to run the webdriver '{}'.\nCheck if you have a supported driver installed.\nOriginal Error: ",
                     webdriver_type_str
                 );
 
+                let proc = self.sys_info.processes_by_name(&webdriver_type_str).next();
+
                 match proc {
                     Some(_) => Ok(InstanceState::Running),
-                    None => match Command::new(format!("{}.exe", webdriver_type_str)).spawn() {
+                    None => match Command::new(format!("{}.exe", webdriver_type_str))
+                        .stdout(if cfg!(feature = "child-stdout-off") {
+                            Stdio::null()
+                        } else {
+                            Stdio::inherit()
+                        })
+                        .spawn()
+                    {
                         Err(e) => Err(anyhow!(format!("{}{}", run_driver_error_message, e))),
                         anyhow::Result::Ok(child) => Ok(InstanceState::Started(child)),
                     },
