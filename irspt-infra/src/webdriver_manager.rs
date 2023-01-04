@@ -1,12 +1,12 @@
-use std::process::{Command, Stdio};
-
-use anyhow::{anyhow, Ok, Result};
-use sysinfo::{ProcessRefreshKind, RefreshKind, System, SystemExt};
-
 use irspt_contracts::{
     enums::{InstanceState, WebdriverType},
     traits::TWebdriverManager,
 };
+
+use std::process::{Command, Stdio};
+
+use anyhow::{anyhow, Ok, Result};
+use sysinfo::{ProcessRefreshKind, RefreshKind, System, SystemExt};
 
 pub struct WebdriverManager {
     webdriver_type: WebdriverType,
@@ -47,7 +47,7 @@ impl TWebdriverManager for WebdriverManager {
                         })
                         .spawn()
                     {
-                        Err(e) => Err(anyhow!(format!("{}{}", run_driver_error_message, e))),
+                        Err(e) => Err(anyhow!(format!("{}{:#?}", run_driver_error_message, e))),
                         anyhow::Result::Ok(child) => Ok(InstanceState::Started(child)),
                     },
                 }

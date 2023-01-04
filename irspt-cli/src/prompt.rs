@@ -26,7 +26,7 @@ pub fn prompt_invoice_request(
         Text::new("Service description:")
             .with_validator(required!())
             .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_description()
+                existing_template.as_ref().unwrap().get_description()
             } else {
                 ""
             })
@@ -39,7 +39,7 @@ pub fn prompt_invoice_request(
             .with_help_message("(e.g. 'PORTUGAL', 'REINO UNIDO')")
             .with_validator(required!())
             .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_client_country()
+                existing_template.as_ref().unwrap().get_client_country()
             } else {
                 ""
             })
@@ -52,7 +52,7 @@ pub fn prompt_invoice_request(
         Text::new("Client NIF/VAT:")
             .with_validators(&[required!(), is_integer!()])
             .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_client_nif()
+                existing_template.as_ref().unwrap().get_client_nif()
             } else {
                 ""
             })
@@ -64,7 +64,7 @@ pub fn prompt_invoice_request(
         Text::new("Client Name:")
             .with_validator(required!())
             .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_client_name()
+                existing_template.as_ref().unwrap().get_client_name()
             } else {
                 ""
             })
@@ -76,7 +76,7 @@ pub fn prompt_invoice_request(
         Text::new("Client Address:")
             .with_validator(required!())
             .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_client_address()
+                existing_template.as_ref().unwrap().get_client_address()
             } else {
                 ""
             })
@@ -88,7 +88,7 @@ pub fn prompt_invoice_request(
         Text::new("Value (€):")
             .with_validators(&[required!(), is_decimal!()])
             .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_value()
+                existing_template.as_ref().unwrap().get_value()
             } else {
                 ""
             })
@@ -100,7 +100,7 @@ pub fn prompt_invoice_request(
         Text::new("NIF:")
             .with_validators(&[required!(), is_integer!()])
             .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_nif()
+                existing_template.as_ref().unwrap().get_nif()
             } else {
                 ""
             })
