@@ -30,7 +30,7 @@ where
 mod tests {
     use super::deserialize_from_bytes;
     use super::serialize_to_bytes;
-    use irspt_contracts::models::IssueInvoiceRequest;
+    use crate::models::IssueInvoiceRequest;
 
     use std::collections::HashMap;
 

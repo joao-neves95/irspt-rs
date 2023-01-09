@@ -1,4 +1,4 @@
-use irspt_contracts::{
+use crate::{
     enums::{InstanceState, WebdriverType},
     traits::TWebdriverManager,
 };
@@ -59,12 +59,11 @@ impl TWebdriverManager for WebdriverManager {
 
 #[cfg(test)]
 mod tests {
-    use irspt_contracts::{
+    use super::WebdriverManager;
+    use crate::{
         enums::{InstanceState, WebdriverType},
         traits::TWebdriverManager,
     };
-
-    use super::WebdriverManager;
 
     #[test]
     fn is_geckodriver_running_passes() {

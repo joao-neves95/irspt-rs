@@ -1,5 +1,5 @@
 use crate::{is_decimal, is_integer};
-use irspt_contracts::models::IssueInvoiceRequest;
+use irspt_core::models::IssueInvoiceRequest;
 
 use std::collections::HashMap;
 

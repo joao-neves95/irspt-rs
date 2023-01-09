@@ -1,14 +1,13 @@
 mod prompt;
 mod validators;
-use prompt::prompt_invoice_request;
-
-use irspt_api::IrsptApi;
-use irspt_contracts::{
+use irspt_core::{
+    api::IrsptApi,
     enums::{InstanceState, WebdriverType},
+    infra::{InvoiceTemplateSledStore, SledDb, WebdriverManager},
     models::IssueInvoiceRequest,
     traits::{TInvoiceTemplateStore, TIrsptApiAuth, TIrsptApiInvoices, TWebdriverManager},
 };
-use irspt_infra::{InvoiceTemplateSledStore, SledDb, WebdriverManager};
+use prompt::prompt_invoice_request;
 
 use anyhow::{Context, Result};
 use inquire::{required, Confirm, Password, Text};

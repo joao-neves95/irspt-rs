@@ -1,9 +1,9 @@
-use crate::extensions::ElementProp;
-use crate::extensions::WebDriverExtensions;
-use crate::extensions::WebElementExtensions;
-use crate::IrsptApi;
-use irspt_contracts::models::IssueInvoiceRequest;
-use irspt_contracts::traits::TIrsptApiInvoices;
+use super::extensions::ElementProp;
+use super::extensions::WebDriverExtensions;
+use super::extensions::WebElementExtensions;
+use super::IrsptApi;
+use crate::models::IssueInvoiceRequest;
+use crate::traits::TIrsptApiInvoices;
 
 use std::thread;
 use std::time;

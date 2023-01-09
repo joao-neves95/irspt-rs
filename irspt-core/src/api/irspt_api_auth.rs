@@ -1,5 +1,5 @@
-use crate::{extensions::WebDriverExtensions, IrsptApi};
-use irspt_contracts::traits::TIrsptApiAuth;
+use super::{extensions::WebDriverExtensions, IrsptApi};
+use crate::traits::TIrsptApiAuth;
 
 use std::{thread, time};
 
