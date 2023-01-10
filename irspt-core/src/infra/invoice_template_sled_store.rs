@@ -14,17 +14,15 @@ pub struct InvoiceTemplateSledStore<'a> {
     sled_db: &'a SledDb,
 }
 
-impl<'a> InvoiceTemplateSledStore<'a> {
-    pub fn new(db_wrapper: &'a mut SledDb) -> Result<Self> {
+impl<'a> TInvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
+    fn new(db_wrapper: &'a mut SledDb) -> Result<Self> {
         let _ = db_wrapper.open();
 
         Ok(InvoiceTemplateSledStore::<'a> {
             sled_db: db_wrapper,
         })
     }
-}
 
-impl<'a> TInvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
     fn get_template(&self, template_name: &str) -> Result<Option<IssueInvoiceRequest>> {
         let raw_result = self
             .sled_db
