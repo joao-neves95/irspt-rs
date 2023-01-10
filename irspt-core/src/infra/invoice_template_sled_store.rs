@@ -15,9 +15,7 @@ pub struct InvoiceTemplateSledStore<'a> {
 }
 
 impl<'a> TInvoiceTemplateStore<'a> for InvoiceTemplateSledStore<'a> {
-    fn new(db_wrapper: &'a mut SledDb) -> Result<Self> {
-        let _ = db_wrapper.open();
-
+    fn new(db_wrapper: &'a SledDb) -> Result<Self> {
         Ok(InvoiceTemplateSledStore::<'a> {
             sled_db: db_wrapper,
         })

@@ -17,7 +17,9 @@ const DEFAULT_TEMPLATE_NAME: &str = "DEFAULT";
 #[tokio::main]
 async fn main() -> Result<()> {
     let mut sled_db = SledDb::new();
-    let invoice_template_store = InvoiceTemplateSledStore::new(&mut sled_db)?;
+    let _ = sled_db.open();
+
+    let invoice_template_store = InvoiceTemplateSledStore::new(&sled_db)?;
 
     let existing_model = match invoice_template_store.get_template(DEFAULT_TEMPLATE_NAME) {
         anyhow::Result::Ok(model) => model,

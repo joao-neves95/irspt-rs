@@ -3,7 +3,7 @@ use crate::{infra::SledDb, models::IssueInvoiceRequest};
 use anyhow::Result;
 
 pub trait TInvoiceTemplateStore<'a> {
-    fn new(db_wrapper: &'a mut SledDb) -> Result<Self>
+    fn new(db_wrapper: &'a SledDb) -> Result<Self>
     where
         Self: Sized;
 
