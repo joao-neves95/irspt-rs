@@ -1,18 +1,15 @@
 mod prompt;
 mod validators;
 use irspt_core::{
-    api::IrsptApi,
-    enums::{InstanceState, WebdriverType},
-    infra::{InvoiceTemplateSledStore, SledDb, WebdriverManager},
+    infra::{InvoiceTemplateSledStore, SledDb},
     models::IssueInvoiceRequest,
-    traits::{TInvoiceTemplateStore, TIrsptApiAuth, TIrsptApiInvoices, TWebdriverManager},
+    services::InvoicesService,
+    traits::{TInvoiceTemplateStore, TInvoicesService},
 };
 use prompt::prompt_invoice_request;
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use inquire::{required, Confirm, Password, Text};
-
-const DEFAULT_TEMPLATE_NAME: &str = "DEFAULT";
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -21,10 +18,12 @@ async fn main() -> Result<()> {
 
     let invoice_template_store = InvoiceTemplateSledStore::new(&sled_db)?;
 
-    let existing_model = match invoice_template_store.get_template(DEFAULT_TEMPLATE_NAME) {
+    let mut invoice_service = InvoicesService::new_async(&invoice_template_store).await?;
+
+    let existing_model = match invoice_service.get_saved_template() {
         anyhow::Result::Ok(model) => model,
 
-        Err(_) => delete_template_if_invalid_prompt(&invoice_template_store)?,
+        Err(_) => delete_template_if_invalid_prompt(&invoice_service)?,
     };
 
     let nif = Text::new("NIF:")
@@ -41,14 +40,7 @@ async fn main() -> Result<()> {
         .with_validator(required!())
         .prompt()?;
 
-    let webdriver_status =
-        WebdriverManager::new(WebdriverType::Gecko).start_instance_if_needed()?;
-
-    let irspt_api = IrsptApi::new().await.context(
-        "ERROR: Issue while trying to connect to the WebDriver server. Make sure it's running.",
-    )?;
-
-    irspt_api.authenticate_async(&nif, &password).await?;
+    invoice_service.authenticate_async(&nif, &password).await?;
 
     let mut invoice_request = prompt_invoice_request(&existing_model)?;
     invoice_request.set_nif(nif);
@@ -59,33 +51,26 @@ async fn main() -> Result<()> {
         .prompt()?;
 
     if save_template {
-        invoice_template_store.update_template(DEFAULT_TEMPLATE_NAME, &invoice_request)?;
+        invoice_service.update_saved_template(&invoice_request)?;
     }
 
     #[cfg(feature = "issue-invoice")]
     {
-        irspt_api.issue_invoice_async(&invoice_request).await?;
+        invoice_service
+            .issue_invoice_async(&invoice_request)
+            .await?;
+
         // TODO: Temporary.
         // thread::sleep(time::Duration::from_secs(5));
     }
 
-    match webdriver_status {
-        InstanceState::Started(mut process) => {
-            process.kill()?;
-        }
-        _ => (), // Nothing to do.
-    }
-
-    #[cfg(feature = "issue-invoice")]
-    {
-        irspt_api.close_async().await?;
-    }
+    invoice_service.drop_async().await?;
 
     Ok(())
 }
 
 fn delete_template_if_invalid_prompt<'a>(
-    invoice_template_store: &impl TInvoiceTemplateStore<'a>,
+    invoice_service: &impl TInvoicesService<'a>,
 ) -> Result<Option<IssueInvoiceRequest>> {
     let delete_template = Confirm::new(
         "ERROR: Your template data was corrupted. Delete the existing one to create a new one?",
@@ -97,7 +82,7 @@ fn delete_template_if_invalid_prompt<'a>(
         return Ok(None);
     }
 
-    invoice_template_store.remove_template(&DEFAULT_TEMPLATE_NAME)?;
+    invoice_service.delete_saved_template()?;
 
     Ok(None)
 }

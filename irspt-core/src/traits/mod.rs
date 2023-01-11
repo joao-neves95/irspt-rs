@@ -9,3 +9,6 @@ pub use irspt_api_auth::TIrsptApiAuth;
 
 mod irspt_api_invoices;
 pub use irspt_api_invoices::TIrsptApiInvoices;
+
+mod invoices_service;
+pub use invoices_service::TInvoicesService;
