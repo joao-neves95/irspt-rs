@@ -10,49 +10,41 @@ use sysinfo::{ProcessRefreshKind, RefreshKind, System, SystemExt};
 
 pub struct WebdriverManager {
     webdriver_type: WebdriverType,
-    sys_info: System,
 }
 
 impl TWebdriverManager for WebdriverManager {
     fn new(webdriver_type: WebdriverType) -> Self {
-        WebdriverManager {
-            webdriver_type,
-            sys_info: System::new_with_specifics(
-                RefreshKind::new().with_processes(ProcessRefreshKind::new()),
-            ),
-        }
+        WebdriverManager { webdriver_type }
     }
 
     fn start_instance_if_needed(&mut self) -> Result<InstanceState> {
-        match self.webdriver_type {
-            WebdriverType::Gecko => {
-                self.sys_info
-                    .refresh_processes_specifics(ProcessRefreshKind::new());
+        let mut sys_info = System::new_with_specifics(
+            RefreshKind::new().with_processes(ProcessRefreshKind::new()),
+        );
+        sys_info.refresh_processes_specifics(ProcessRefreshKind::new());
 
-                let webdriver_type_str = &self.webdriver_type.to_string();
-                let run_driver_error_message = format!(
-                    "Error while trying to run the webdriver '{}'.\nCheck if you have a supported driver installed.\nOriginal Error: ",
-                    webdriver_type_str
-                );
+        let webdriver_type_str = &self.webdriver_type.to_string();
+        let run_driver_error_message = format!(
+            "Error while trying to run the webdriver '{}'.\nCheck if you have a supported driver installed.\nOriginal Error: ",
+            webdriver_type_str
+        );
 
-                let proc = self.sys_info.processes_by_name(&webdriver_type_str).next();
+        let proc = sys_info.processes_by_name(&webdriver_type_str).next();
 
-                match proc {
-                    Some(_) => Ok(InstanceState::Running),
-                    None => match Command::new(format!("{}.exe", webdriver_type_str))
-                        .stdout(if cfg!(feature = "child-stdout-off") {
-                            Stdio::null()
-                        } else {
-                            Stdio::inherit()
-                        })
-                        .spawn()
-                    {
-                        Err(e) => Err(anyhow!(format!("{}{:#?}", run_driver_error_message, e))),
-                        anyhow::Result::Ok(child) => Ok(InstanceState::Started(child)),
-                    },
-                }
-            }
-            _ => panic!("Unknown webdriver type."),
+        match proc {
+            Some(_) => Ok(InstanceState::Running),
+
+            None => match Command::new(webdriver_type_str)
+                .stdout(if cfg!(feature = "child-stdout-off") {
+                    Stdio::null()
+                } else {
+                    Stdio::inherit()
+                })
+                .spawn()
+            {
+                Err(e) => Err(anyhow!(format!("{}{:#?}", run_driver_error_message, e))),
+                anyhow::Result::Ok(child) => Ok(InstanceState::Started(child)),
+            },
         }
     }
 }
