@@ -18,6 +18,13 @@ impl TIrsptApiAuth for IrsptApi {
 
         let _ = &self
             .web_driver
+            .find_by_prop_value_async("label", "for", "tab2")
+            .await?
+            .click()
+            .await?;
+
+        let _ = &self
+            .web_driver
             .set_input_value_by_id_async("username", nif)
             .await?;
 
