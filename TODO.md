@@ -1,8 +1,7 @@
 # TODO
 
-- Refactor the non-presentation code in `main` into a separate project for domain logic.
+- Move the web_driver creation logic into the webdriver_manager.
 - Add support for dynamic multi-options (reference data).
-- Auto-install the webdriver client, if needed.
 - Add a settings menu.
 - Un-hardcode strings with embedded resources.
 - Refactor the prompt. SoC.

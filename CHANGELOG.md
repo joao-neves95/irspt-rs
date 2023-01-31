@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## v0.4.0
+- [fix]: Fixed the "Portal das Finanças" authentication step, according to the new online platform changes.
 - [feat]: Auto-run the webdriver at startup, if needed.
 - [refactor]: Internal code refactoring.
 - [chore]: Updated multiple dependencies.

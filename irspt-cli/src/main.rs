@@ -1,9 +1,10 @@
 mod prompt;
 mod validators;
+
 use irspt_core::{
     infra::{InvoiceTemplateSledStore, SledDb},
     models::IssueInvoiceRequest,
-    services::InvoicesService,
+    services::{InvoicesService, InvoicesServiceProps},
     traits::{TInvoiceTemplateStore, TInvoicesService},
 };
 use prompt::prompt_invoice_request;
@@ -18,7 +19,12 @@ async fn main() -> Result<()> {
 
     let invoice_template_store = InvoiceTemplateSledStore::new(&sled_db)?;
 
-    let mut invoice_service = InvoicesService::new_async(&invoice_template_store).await?;
+    let invoices_service_props = InvoicesServiceProps {
+        invoice_template_store: &invoice_template_store,
+        headless_webdriver: cfg!(feature = "headless-webdriver"),
+    };
+
+    let mut invoice_service = InvoicesService::new_async(&invoices_service_props).await?;
 
     let existing_model = match invoice_service.get_saved_template() {
         anyhow::Result::Ok(model) => model,
@@ -60,8 +66,13 @@ async fn main() -> Result<()> {
             .issue_invoice_async(&invoice_request)
             .await?;
 
-        // TODO: Temporary.
-        // thread::sleep(time::Duration::from_secs(5));
+        #[cfg(feature = "issue-invoice-final-timout")]
+        {
+            use core::time;
+            use std::thread;
+
+            thread::sleep(time::Duration::from_secs(5));
+        }
     }
 
     invoice_service.drop_async().await?;

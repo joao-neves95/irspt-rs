@@ -1,5 +1,5 @@
 use crate::{
-    api::IrsptApi,
+    api::{IrsptApi, IrsptApiProps},
     enums::{InstanceState, WebdriverType},
     infra::{InvoiceTemplateSledStore, WebdriverManager},
     models::IssueInvoiceRequest,
@@ -14,6 +14,11 @@ use async_trait::async_trait;
 
 const DEFAULT_TEMPLATE_NAME: &str = "DEFAULT";
 
+pub struct InvoicesServiceProps<'a> {
+    pub headless_webdriver: bool,
+    pub invoice_template_store: &'a InvoiceTemplateSledStore<'a>,
+}
+
 pub struct InvoicesService<'a> {
     invoice_template_store: Box<&'a InvoiceTemplateSledStore<'a>>,
     webdriver_instance_state: InstanceState,
@@ -22,16 +27,16 @@ pub struct InvoicesService<'a> {
 
 #[async_trait]
 impl<'a> TInvoicesService<'a> for InvoicesService<'a> {
-    async fn new_async(invoice_template_store: &'a InvoiceTemplateSledStore<'a>) -> Result<Self>
+    async fn new_async(props: &'a InvoicesServiceProps) -> Result<Self>
     where
         Self: Sized,
     {
         Ok(InvoicesService {
-            invoice_template_store: Box::new(invoice_template_store),
+            invoice_template_store: Box::new(props.invoice_template_store),
 
             webdriver_instance_state: WebdriverManager::new(WebdriverType::Gecko).start_instance_if_needed()?,
 
-            irspt_api: IrsptApi::new().await.context(
+            irspt_api: IrsptApi::new( IrsptApiProps { headless: props.headless_webdriver }).await.context(
                 "ERROR: Issue while trying to connect to the WebDriver server. Make sure it's running.",
             )?,
         })

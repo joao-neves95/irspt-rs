@@ -1,11 +1,11 @@
-use crate::{infra::InvoiceTemplateSledStore, models::IssueInvoiceRequest};
+use crate::{models::IssueInvoiceRequest, services::InvoicesServiceProps};
 
 use anyhow::Result;
 use async_trait::async_trait;
 
 #[async_trait]
 pub trait TInvoicesService<'a> {
-    async fn new_async(invoice_template_store: &'a InvoiceTemplateSledStore<'a>) -> Result<Self>
+    async fn new_async(props: &'a InvoicesServiceProps) -> Result<Self>
     where
         Self: Sized;
 

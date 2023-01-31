@@ -1,17 +1,21 @@
 [package]
 name = "irspt-cli"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-issue-invoice = []
 child-stdout-off = []
+headless-webdriver = []
+issue-invoice = []
+issue-invoice-final-timout = []
 
 default = [
+  "child-stdout-off",
+  "headless-webdriver",
   "issue-invoice",
-  "child-stdout-off"
+  #"issue-invoice-final-timout"
 ]
 
 [dependencies]
