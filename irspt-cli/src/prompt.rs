@@ -96,17 +96,5 @@ pub fn prompt_invoice_request(
             .to_string(),
     );
 
-    input.set_nif(
-        Text::new("NIF:")
-            .with_validators(&[required!(), is_integer!()])
-            .with_default(if existing_template.is_some() {
-                existing_template.as_ref().unwrap().get_nif()
-            } else {
-                ""
-            })
-            .prompt()?
-            .to_string(),
-    );
-
     Ok(input)
 }
