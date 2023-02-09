@@ -1,11 +1,12 @@
 # TODO
 
+- Move the web_driver creation logic into the webdriver_manager.
 - Add support for dynamic multi-options (reference data).
+- Add a settings menu.
 - Un-hardcode strings with embedded resources.
+- Refactor the prompt. SoC.
 - Add tests to WebDriverExtensions.
 - Add tests to WebElementExtensions.
-- Refactor the APIs.
-- Refactor the prompt.
 - Add tests to the CLI.
-- Add error handling.
+- Add more error handling.
 - Add support for multiple templates.

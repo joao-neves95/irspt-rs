@@ -1,5 +1,5 @@
 use crate::{is_decimal, is_integer};
-use irspt_contracts::models::IssueInvoiceRequest;
+use irspt_core::models::IssueInvoiceRequest;
 
 use std::collections::HashMap;
 
@@ -16,7 +16,7 @@ pub fn prompt_invoice_request(
     input.set_date(
         DateSelect::new("Service date:")
             .with_week_start(chrono::Weekday::Mon)
-            .with_default(chrono::Local::today().naive_local())
+            .with_default(chrono::Local::now().naive_local().date())
             .prompt()?
             .format("%Y-%m-%d")
             .to_string(),
@@ -26,7 +26,7 @@ pub fn prompt_invoice_request(
         Text::new("Service description:")
             .with_validator(required!())
             .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_description()
+                existing_template.as_ref().unwrap().get_description()
             } else {
                 ""
             })
@@ -39,7 +39,7 @@ pub fn prompt_invoice_request(
             .with_help_message("(e.g. 'PORTUGAL', 'REINO UNIDO')")
             .with_validator(required!())
             .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_client_country()
+                existing_template.as_ref().unwrap().get_client_country()
             } else {
                 ""
             })
@@ -52,7 +52,7 @@ pub fn prompt_invoice_request(
         Text::new("Client NIF/VAT:")
             .with_validators(&[required!(), is_integer!()])
             .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_client_nif()
+                existing_template.as_ref().unwrap().get_client_nif()
             } else {
                 ""
             })
@@ -64,7 +64,7 @@ pub fn prompt_invoice_request(
         Text::new("Client Name:")
             .with_validator(required!())
             .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_client_name()
+                existing_template.as_ref().unwrap().get_client_name()
             } else {
                 ""
             })
@@ -76,7 +76,7 @@ pub fn prompt_invoice_request(
         Text::new("Client Address:")
             .with_validator(required!())
             .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_client_address()
+                existing_template.as_ref().unwrap().get_client_address()
             } else {
                 ""
             })
@@ -88,19 +88,7 @@ pub fn prompt_invoice_request(
         Text::new("Value (€):")
             .with_validators(&[required!(), is_decimal!()])
             .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_value()
-            } else {
-                ""
-            })
-            .prompt()?
-            .to_string(),
-    );
-
-    input.set_nif(
-        Text::new("NIF:")
-            .with_validators(&[required!(), is_integer!()])
-            .with_default(if existing_template.is_some() {
-                &existing_template.as_ref().unwrap().get_nif()
+                existing_template.as_ref().unwrap().get_value()
             } else {
                 ""
             })

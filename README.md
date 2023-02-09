@@ -1,15 +1,18 @@
 # irspt-rs
 
+![CLI screenshot - date picker](/_assets/1.png)
+
+![CLI screenshot - complete](/_assets/2.png)
+
+---
+
 ## Description
 
 A CLI program to issue invoices by interfacing with Portugal's Tax Authority.\
 It's possible to create a template to automate the process of issuing an invoice.\
-This is a first version for my own use. At the moment, it does not support support features like:
+This is for my own use and it does not have many features.
 
-- Multi-template support.
-- Input selection by using reference data.
-- Extensive error handling.
-- And many others.
+---
 
 ## Disclamer
 
@@ -21,15 +24,23 @@ THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED IN
 YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR
 OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 
+---
+
 ## Prerequisites
 
-- Have `geckodriver` running on your system. Same version as Firefox.\
+- Have `geckodriver` installed in your machine. Same version as Firefox.\
   https://github.com/mozilla/geckodriver/releases
+
+---
 
 ## Technologies
 
 Made with:
 - [Rust](https://github.com/rust-lang)
+- [Tokio](https://github.com/tokio-rs/tokio) - Async.
 - [thirtyfour](https://github.com/stevepryde/thirtyfour) - WebDriver client.
 - [sled](https://github.com/spacejam/sled) - Embedded database.
 - [rkyv](https://github.com/rkyv/rkyv) - Zero-copy raw byte deserialization.
+- [Inquire](https://github.com/mikaelmello/inquire) - Prompt.
+
+---

@@ -1,8 +1,12 @@
-use crate::models::IssueInvoiceRequest;
+use crate::{infra::SledDb, models::IssueInvoiceRequest};
 
 use anyhow::Result;
 
-pub trait InvoiceTemplateStore<'a> {
+pub trait TInvoiceTemplateStore<'a> {
+    fn new(db_wrapper: &'a SledDb) -> Result<Self>
+    where
+        Self: Sized;
+
     fn get_template(&self, template_name: &str) -> Result<Option<IssueInvoiceRequest>>;
 
     fn add_template(&self, template_name: &str, model: &IssueInvoiceRequest) -> Result<()>;
