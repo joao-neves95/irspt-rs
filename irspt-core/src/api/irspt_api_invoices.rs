@@ -22,7 +22,7 @@ impl TIrsptApiInvoices for IrsptApi {
         self
             .web_driver
             .goto(format!(
-                "https://irs.portaldasfinancas.gov.pt/recibos/portal/emitirfatura#?modoConsulta=Prestador&nifPrestadorServicos={}&isAutoSearchOn=on",
+                "https://irs.portaldasfinancas.gov.pt/recibos/portal/emitir/emitirfatura#?modoConsulta=Prestador&nifPrestadorServicos={}&isAutoSearchOn=on",
                 request_model.get_nif()
             ))
             .await?;
