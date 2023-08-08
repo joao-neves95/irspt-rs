@@ -31,12 +31,16 @@ impl TIrsptApiInvoices for IrsptApi {
 
         let _ = &self
             .web_driver
-            .set_input_value_by_prop_value_async("name", "dataPrestacao", request_model.get_date())
+            .set_input_value_by_prop_value_async(
+                "name",
+                InvoicePageNameValues::SERVICE_DATE,
+                request_model.get_date(),
+            )
             .await?;
 
         let _ = &self
             .web_driver
-            .find_by_prop_value_async("select", "name", "tipoRecibo")
+            .find_by_prop_value_async("select", "name", InvoicePageNameValues::INVOICE_TYPE)
             .await?
             .select_option_by_prop_value_async("label", "Fatura-Recibo")
             .await?;
@@ -45,7 +49,7 @@ impl TIrsptApiInvoices for IrsptApi {
 
         let _ = &self
             .web_driver
-            .find_by_prop_value_async("select", "name", "pais")
+            .find_by_prop_value_async("select", "name", InvoicePageNameValues::CLIENT_COUNTRY)
             .await?
             .select_option_by_prop_value_containing_async(
                 "label",
@@ -58,9 +62,9 @@ impl TIrsptApiInvoices for IrsptApi {
             .set_input_value_by_prop_value_async(
                 "name",
                 if is_portuguese_client {
-                    "nifAdquirente"
+                    InvoicePageNameValues::VAT_NATIONAL_CLIENT
                 } else {
-                    "nifEstrangeiro"
+                    InvoicePageNameValues::VAT_INTERNATIONAL_CLIENT
                 },
                 request_model.get_client_nif(),
             )
@@ -70,7 +74,7 @@ impl TIrsptApiInvoices for IrsptApi {
             .web_driver
             .set_input_value_by_prop_value_async(
                 "name",
-                "nomeAdquirente",
+                InvoicePageNameValues::CLIENT_NAME,
                 request_model.get_client_name(),
             )
             .await?;
@@ -80,7 +84,7 @@ impl TIrsptApiInvoices for IrsptApi {
                 .web_driver
                 .set_input_value_by_prop_value_async(
                     "name",
-                    "moradaAdquirente",
+                    InvoicePageNameValues::CLIENT_ADDRESS,
                     request_model.get_client_address(),
                 )
                 .await;
@@ -110,14 +114,18 @@ impl TIrsptApiInvoices for IrsptApi {
             .web_driver
             .set_textarea_value_by_prop_value_async(
                 "name",
-                "servicoPrestado",
+                InvoicePageNameValues::SERVICE_DESCRIPTION,
                 request_model.get_description(),
             )
             .await?;
 
         let _ = &self
             .web_driver
-            .set_input_value_by_prop_value_async("name", "valorBase", request_model.get_value())
+            .set_input_value_by_prop_value_async(
+                "name",
+                InvoicePageNameValues::SERVICE_VALUE,
+                request_model.get_value(),
+            )
             .await?;
 
         let _ = &self

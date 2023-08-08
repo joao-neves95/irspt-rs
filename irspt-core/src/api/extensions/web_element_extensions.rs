@@ -35,13 +35,13 @@ fn find_by_prop_selector(
     elem_name: &str,
     prop_name: &str,
     prop_value: &str,
-    like_query: bool,
+    is_like_query: bool,
 ) -> By {
     By::Css(&format!(
         "{}[{}{}='{}']",
         elem_name,
         prop_name,
-        if like_query { "*" } else { "" },
+        if is_like_query { "*" } else { "" },
         prop_value
     ))
 }
