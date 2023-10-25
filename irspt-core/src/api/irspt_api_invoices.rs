@@ -1,33 +1,39 @@
+use super::constants::InvoicePageNameValues;
+use super::constants::IrsPtUrls;
 use super::extensions::ElementProp;
 use super::extensions::WebDriverExtensions;
 use super::extensions::WebElementExtensions;
 use super::IrsptApi;
 use crate::models::IssueInvoiceRequest;
+use crate::models::ReferenceDataDto;
 use crate::traits::TIrsptApiInvoices;
-
-use std::thread;
-use std::time;
 
 use anyhow::Result;
 use async_trait::async_trait;
+use thirtyfour::prelude::ElementWaitable;
 use thirtyfour::By;
 
 #[async_trait]
-impl TIrsptApiInvoices for IrsptApi {
-    // TODO: Separate this into a Builder pattern.
+impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
+    // TODO: Add tests.
     async fn issue_invoice_async(&self, request_model: &IssueInvoiceRequest) -> Result<()> {
         let is_portuguese_client = request_model.get_client_country() == "PORTUGAL";
 
-        // TODO: Un-hardcode url.
-        self
-            .web_driver
+        self.web_driver
             .goto(format!(
-                "https://irs.portaldasfinancas.gov.pt/recibos/portal/emitir/emitirfatura#?modoConsulta=Prestador&nifPrestadorServicos={}&isAutoSearchOn=on",
+                "{}#?modoConsulta=Prestador&nifPrestadorServicos={}&isAutoSearchOn=on",
+                IrsPtUrls::ISSUE_INVOICE_PAGE,
                 request_model.get_nif()
             ))
             .await?;
 
-        thread::sleep(time::Duration::from_secs(1));
+        let _ = &self
+            .web_driver
+            .find_by_prop_value_async("input", "name", InvoicePageNameValues::SERVICE_DATE)
+            .await?
+            .wait_until()
+            .displayed()
+            .await?;
 
         let _ = &self
             .web_driver
@@ -45,7 +51,13 @@ impl TIrsptApiInvoices for IrsptApi {
             .select_option_by_prop_value_async("label", "Fatura-Recibo")
             .await?;
 
-        thread::sleep(time::Duration::from_millis(500));
+        let _ = &self
+            .web_driver
+            .find_by_prop_value_async("select", "name", InvoicePageNameValues::CLIENT_COUNTRY)
+            .await?
+            .wait_until()
+            .displayed()
+            .await?;
 
         let _ = &self
             .web_driver
@@ -150,6 +162,8 @@ impl TIrsptApiInvoices for IrsptApi {
             )
             .await?;
 
+        #[cfg(not(feature = "dev-mode"))]
+        {
         let _ = &self
             .web_driver
             .find(By::ClassName("fixed-header"))
@@ -167,6 +181,7 @@ impl TIrsptApiInvoices for IrsptApi {
             .await?
             .click()
             .await?;
+        }
 
         Ok(())
     }

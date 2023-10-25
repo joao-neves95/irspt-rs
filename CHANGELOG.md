@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v0.4.1
+- [refactor]: Multiple internal improvements and refactorings.
+
 ## v0.4.0
 - [fix]: Fixed the "Portal das Finanças" authentication, according to the new online platform changes.
 - [fix]: Updated the new issue invoice URL.

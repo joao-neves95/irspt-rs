@@ -35,7 +35,7 @@ impl TWebdriverManager for WebdriverManager {
             Some(_) => Ok(InstanceState::Running),
 
             None => match Command::new(webdriver_type_str)
-                .stdout(if cfg!(feature = "child-stdout-off") {
+                .stdout(if cfg!(not(feature = "dev-mode")) {
                     Stdio::null()
                 } else {
                     Stdio::inherit()
@@ -60,18 +60,21 @@ mod tests {
     #[test]
     fn is_geckodriver_running_passes() {
         let mut webdriver_client = WebdriverManager::new(WebdriverType::Gecko);
-        let final_state = webdriver_client.start_instance_if_needed();
+        let final_state_result = webdriver_client.start_instance_if_needed();
 
-        match final_state {
+        // Cleanup.
+        match final_state_result {
             Err(e) => panic!("{}", e),
 
             Ok(state) => match state {
+                // Do nothing if it was already running on the client machine.
+                InstanceState::Running => (),
+
                 InstanceState::Started(mut child_command) => {
                     assert!(child_command.id() > 0);
                     let _ = child_command.kill();
                 }
 
-                InstanceState::Running => (), // Nothing to do.
                 _ => panic!("The final child process state is invalid."),
             },
         };

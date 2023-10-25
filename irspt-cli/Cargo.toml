@@ -6,16 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-child-stdout-off = []
-headless-webdriver = []
-issue-invoice = []
-issue-invoice-final-timout = []
+dev-mode = []
+final-timout = []
 
 default = [
-  "child-stdout-off",
-  "headless-webdriver",
-  "issue-invoice",
-  #"issue-invoice-final-timout"
+  "dev-mode",
+  "final-timout"
 ]
 
 [dependencies]

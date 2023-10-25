@@ -21,7 +21,7 @@ async fn main() -> Result<()> {
 
     let invoices_service_props = InvoicesServiceProps {
         invoice_template_store: &invoice_template_store,
-        headless_webdriver: cfg!(feature = "headless-webdriver"),
+        headless_webdriver: cfg!(not(feature = "dev-mode")),
     };
 
     let mut invoice_service = InvoicesService::new_async(&invoices_service_props).await?;
@@ -60,19 +60,16 @@ async fn main() -> Result<()> {
         invoice_service.update_saved_template(&invoice_request)?;
     }
 
-    #[cfg(feature = "issue-invoice")]
+    invoice_service
+        .issue_invoice_async(&invoice_request)
+        .await?;
+
+    #[cfg(feature = "final-timout")]
     {
-        invoice_service
-            .issue_invoice_async(&invoice_request)
-            .await?;
+        use core::time;
+        use std::thread;
 
-        #[cfg(feature = "issue-invoice-final-timout")]
-        {
-            use core::time;
-            use std::thread;
-
-            thread::sleep(time::Duration::from_secs(5));
-        }
+        thread::sleep(time::Duration::from_secs(5));
     }
 
     invoice_service.drop_async().await?;
