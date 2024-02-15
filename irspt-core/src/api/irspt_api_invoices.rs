@@ -7,6 +7,7 @@ use super::extensions::WebDriverExtensions;
 use super::extensions::WebElementExtensions;
 use super::IrsptApi;
 use crate::models::IssueInvoiceRequest;
+#[cfg(feature = "reference-data")]
 use crate::models::ReferenceDataDto;
 use crate::traits::TIrsptApiInvoices;
 
@@ -210,5 +211,31 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
         }
 
         Ok(())
+    }
+
+    #[cfg(feature = "reference-data")]
+    async fn get_reference_data(
+        &self,
+        dto_ref: &'a mut ReferenceDataDto,
+    ) -> Result<&'a ReferenceDataDto> {
+        todo!();
+
+        self.web_driver.goto("").await?;
+
+        dto_ref.countries = vec!["PORTUGAL".to_owned(), "REINO UNIDO".to_owned()];
+
+        Ok(dto_ref)
+    }
+}
+
+#[cfg(feature = "reference-data")]
+#[cfg(test)]
+mod tests {
+    use crate::{enums::WebdriverType, infra::WebdriverManager, traits::TWebdriverManager};
+
+    #[test]
+    fn is_geckodriver_running_passes() {
+        let mut webdriver_client = WebdriverManager::new(WebdriverType::Gecko);
+        let final_state_result = webdriver_client.start_instance_if_needed();
     }
 }
