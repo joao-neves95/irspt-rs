@@ -1,4 +1,4 @@
-use super::{extensions::WebDriverExtensions, IrsptApi, constants::IrsPtUrls};
+use super::{constants::IrsPtUrls, extensions::WebDriverExtensions, IrsptApi};
 use crate::traits::TIrsptApiAuth;
 
 use std::{thread, time};
@@ -10,9 +10,7 @@ use thirtyfour::By;
 #[async_trait]
 impl TIrsptApiAuth for IrsptApi {
     async fn authenticate_async(&self, nif: &str, password: &str) -> Result<&Self> {
-        self.web_driver
-            .goto(IrsPtUrls::LOGIN_PAGE)
-            .await?;
+        self.web_driver.goto(IrsPtUrls::LOGIN_PAGE).await?;
 
         let _ = &self
             .web_driver

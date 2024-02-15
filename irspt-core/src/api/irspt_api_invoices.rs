@@ -1,3 +1,5 @@
+use super::constants::HtmlPropertyNames;
+use super::constants::HtmlTagNames;
 use super::constants::InvoicePageNameValues;
 use super::constants::IrsPtUrls;
 use super::extensions::ElementProp;
@@ -29,7 +31,11 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
 
         let _ = &self
             .web_driver
-            .find_by_prop_value_async("input", "name", InvoicePageNameValues::SERVICE_DATE)
+            .find_by_prop_value_async(
+                HtmlTagNames::INPUT,
+                HtmlPropertyNames::NAME,
+                InvoicePageNameValues::SERVICE_DATE,
+            )
             .await?
             .wait_until()
             .displayed()
@@ -38,7 +44,7 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
         let _ = &self
             .web_driver
             .set_input_value_by_prop_value_async(
-                "name",
+                HtmlPropertyNames::NAME,
                 InvoicePageNameValues::SERVICE_DATE,
                 request_model.get_date(),
             )
@@ -46,14 +52,22 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
 
         let _ = &self
             .web_driver
-            .find_by_prop_value_async("select", "name", InvoicePageNameValues::INVOICE_TYPE)
+            .find_by_prop_value_async(
+                HtmlTagNames::SELECT,
+                HtmlPropertyNames::NAME,
+                InvoicePageNameValues::INVOICE_TYPE,
+            )
             .await?
             .select_option_by_prop_value_async("label", "Fatura-Recibo")
             .await?;
 
         let _ = &self
             .web_driver
-            .find_by_prop_value_async("select", "name", InvoicePageNameValues::CLIENT_COUNTRY)
+            .find_by_prop_value_async(
+                HtmlTagNames::SELECT,
+                HtmlPropertyNames::NAME,
+                InvoicePageNameValues::CLIENT_COUNTRY,
+            )
             .await?
             .wait_until()
             .displayed()
@@ -61,7 +75,11 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
 
         let _ = &self
             .web_driver
-            .find_by_prop_value_async("select", "name", InvoicePageNameValues::CLIENT_COUNTRY)
+            .find_by_prop_value_async(
+                HtmlTagNames::SELECT,
+                HtmlPropertyNames::NAME,
+                InvoicePageNameValues::CLIENT_COUNTRY,
+            )
             .await?
             .select_option_by_prop_value_containing_async(
                 "label",
@@ -72,7 +90,7 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
         let _ = &self
             .web_driver
             .set_input_value_by_prop_value_async(
-                "name",
+                HtmlPropertyNames::NAME,
                 if is_portuguese_client {
                     InvoicePageNameValues::VAT_NATIONAL_CLIENT
                 } else {
@@ -85,7 +103,7 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
         let _ = &self
             .web_driver
             .set_input_value_by_prop_value_async(
-                "name",
+                HtmlPropertyNames::NAME,
                 InvoicePageNameValues::CLIENT_NAME,
                 request_model.get_client_name(),
             )
@@ -95,7 +113,7 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
             let _ = &self
                 .web_driver
                 .set_input_value_by_prop_value_async(
-                    "name",
+                    HtmlPropertyNames::NAME,
                     InvoicePageNameValues::CLIENT_ADDRESS,
                     request_model.get_client_address(),
                 )
@@ -105,15 +123,15 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
         let _ = &self
             .web_driver
             .find_by_props_value_async(
-                "input",
+                HtmlTagNames::INPUT,
                 &[
                     &ElementProp {
-                        prop_name: "name",
+                        prop_name: HtmlPropertyNames::NAME,
                         prop_value: "titulo",
                     },
                     // TODO: Add support for different titles of payment ("títulos de pagamento") - by using .reference_data().
                     &ElementProp {
-                        prop_name: "value",
+                        prop_name: HtmlPropertyNames::VALUE,
                         prop_value: "1",
                     },
                 ],
@@ -125,7 +143,7 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
         let _ = &self
             .web_driver
             .set_textarea_value_by_prop_value_async(
-                "name",
+                HtmlPropertyNames::NAME,
                 InvoicePageNameValues::SERVICE_DESCRIPTION,
                 request_model.get_description(),
             )
@@ -134,7 +152,7 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
         let _ = &self
             .web_driver
             .set_input_value_by_prop_value_async(
-                "name",
+                HtmlPropertyNames::NAME,
                 InvoicePageNameValues::SERVICE_VALUE,
                 request_model.get_value(),
             )
@@ -142,7 +160,11 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
 
         let _ = &self
             .web_driver
-            .find_by_prop_value_async("select", "name", "regimeIva")
+            .find_by_prop_value_async(
+                HtmlTagNames::SELECT,
+                HtmlPropertyNames::NAME,
+                InvoicePageNameValues::REGIME_IVA,
+            )
             .await?
             // TODO: Add support for different IVA regimes ("regimes de IVA") - by using .reference_data().
             .select_option_by_prop_value_async(
@@ -153,7 +175,11 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
 
         let _ = &self
             .web_driver
-            .find_by_prop_value_async("select", "name", "regimeIncidenciaIrs")
+            .find_by_prop_value_async(
+                HtmlTagNames::SELECT,
+                HtmlPropertyNames::NAME,
+                InvoicePageNameValues::REGIME_INCIDENCIA_IRS,
+            )
             .await?
             // TODO: Add support for different IVA regimes ("regimes de incidência IRS") - by using .reference_data().
             .select_option_by_prop_value_async(
@@ -164,23 +190,23 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
 
         #[cfg(not(feature = "dev-mode"))]
         {
-        let _ = &self
-            .web_driver
-            .find(By::ClassName("fixed-header"))
-            .await?
-            .find(By::Tag("button"))
-            .await?
-            .click()
-            .await?;
+            let _ = &self
+                .web_driver
+                .find(By::ClassName("fixed-header"))
+                .await?
+                .find(By::Tag("button"))
+                .await?
+                .click()
+                .await?;
 
-        let _ = &self
-            .web_driver
-            .find(By::Id("emitirModal"))
-            .await?
-            .find(By::ClassName("btn-success"))
-            .await?
-            .click()
-            .await?;
+            let _ = &self
+                .web_driver
+                .find(By::Id("emitirModal"))
+                .await?
+                .find(By::ClassName("btn-success"))
+                .await?
+                .click()
+                .await?;
         }
 
         Ok(())
