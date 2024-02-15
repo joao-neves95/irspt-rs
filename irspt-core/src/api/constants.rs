@@ -16,6 +16,8 @@ impl HtmlTagNames {
     pub const INPUT: &str = "select";
 
     pub const TEXTAREA: &str = "textarea";
+
+    pub const OPTION: &str = "option";
 }
 
 pub struct HtmlPropertyNames {}

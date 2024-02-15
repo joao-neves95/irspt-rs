@@ -2,6 +2,8 @@ use anyhow::Result;
 use async_trait::async_trait;
 use thirtyfour::{By, WebDriver, WebElement};
 
+use crate::api::constants::HtmlTagNames;
+
 pub struct ElementProp<'a> {
     pub prop_name: &'a str,
     pub prop_value: &'a str,
@@ -82,7 +84,7 @@ impl WebDriverExtensions for WebDriver {
         prop_value: &str,
         value: &str,
     ) -> Result<()> {
-        self.find_by_prop_value_async("input", prop_name, prop_value)
+        self.find_by_prop_value_async(HtmlTagNames::INPUT, prop_name, prop_value)
             .await?
             .send_keys(value)
             .await?;
@@ -96,7 +98,7 @@ impl WebDriverExtensions for WebDriver {
         prop_value: &str,
         value: &str,
     ) -> Result<()> {
-        self.find_by_prop_value_async("textarea", prop_name, prop_value)
+        self.find_by_prop_value_async(HtmlTagNames::TEXTAREA, prop_name, prop_value)
             .await?
             .send_keys(value)
             .await?;

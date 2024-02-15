@@ -2,6 +2,8 @@ use anyhow::Result;
 use async_trait::async_trait;
 use thirtyfour::{By, WebElement};
 
+use crate::api::constants::HtmlTagNames;
+
 #[async_trait]
 pub trait WebElementExtensions {
     async fn find_by_prop_value_async(
@@ -79,7 +81,7 @@ impl WebElementExtensions for WebElement {
         prop_name: &str,
         prop_value: &str,
     ) -> Result<()> {
-        self.find_by_prop_value_async("option", prop_name, prop_value)
+        self.find_by_prop_value_async(HtmlTagNames::OPTION, prop_name, prop_value)
             .await?
             .click()
             .await?;
@@ -92,7 +94,7 @@ impl WebElementExtensions for WebElement {
         prop_name: &str,
         prop_value: &str,
     ) -> Result<()> {
-        self.find_by_prop_value_containing_async("option", prop_name, prop_value)
+        self.find_by_prop_value_containing_async(HtmlTagNames::OPTION, prop_name, prop_value)
             .await?
             .click()
             .await?;
