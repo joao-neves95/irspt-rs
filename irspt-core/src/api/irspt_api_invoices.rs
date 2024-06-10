@@ -189,8 +189,7 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
             )
             .await?;
 
-        #[cfg(not(feature = "dev-mode"))]
-        {
+        if !request_model.is_dev_mode {
             let _ = &self
                 .web_driver
                 .find(By::ClassName("fixed-header"))
