@@ -2,6 +2,8 @@
 
 ## v0.4.1
 - [refactor]: Multiple internal improvements and refactorings.
+- [fix]: Added the "Atividade Exercida" filed on the invoice.
+- [fix]: Fixed dev mode (dry-run).
 
 ## v0.4.0
 - [fix]: Fixed the "Portal das Finanças" authentication, according to the new online platform changes.

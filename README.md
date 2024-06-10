@@ -8,9 +8,10 @@
 
 ## Description
 
-A CLI program to issue invoices by interfacing with Portugal's Tax Authority.\
-It's possible to create a template to automate the process of issuing an invoice.\
-This is for my own use and it does not have many features.
+A CLI program to issue invoices by interfacing with Portugal's Tax Authority. <br/>
+It's possible to create a template to automate the process of issuing an invoice. <br/>
+This is for my own use, it's hardcoded for me, and it does not have many features. <br/>
+Maybe I'll make it generic in the future.
 
 ---
 
@@ -28,7 +29,7 @@ OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 
 ## Prerequisites
 
-- Have `geckodriver` installed in your machine. Same version as Firefox.\
+- Have `geckodriver` and `firefox` installed in your machine. Same version as Firefox.\
   https://github.com/mozilla/geckodriver/releases
 
 ---
