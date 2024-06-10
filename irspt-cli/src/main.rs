@@ -1,6 +1,8 @@
 mod prompt;
 mod validators;
 
+use std::borrow::BorrowMut;
+
 use irspt_core::{
     infra::{InvoiceTemplateSledStore, SledDb},
     models::IssueInvoiceRequest,
@@ -14,16 +16,17 @@ use inquire::{required, Confirm, Password, Text};
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    let is_dev_mode = cfg!(feature = "dev-mode");
+
     let mut sled_db = SledDb::new();
     let _ = sled_db.open();
 
     let invoice_template_store = InvoiceTemplateSledStore::new(&sled_db)?;
 
     let invoices_service_props = InvoicesServiceProps {
+        is_dev_mode: is_dev_mode,
         invoice_template_store: &invoice_template_store,
-        headless_webdriver: cfg!(not(feature = "dev-mode")),
     };
-
     let mut invoice_service = InvoicesService::new_async(&invoices_service_props).await?;
 
     let existing_model = match invoice_service.get_saved_template() {
@@ -49,7 +52,7 @@ async fn main() -> Result<()> {
     invoice_service.authenticate_async(&nif, &password).await?;
 
     let mut invoice_request = prompt_invoice_request(&existing_model)?;
-    invoice_request.set_nif(nif);
+    invoice_request.set_is_dev_mode(is_dev_mode).set_nif(nif);
 
     let save_template = Confirm::new("Save as template?")
         .with_default(false)
