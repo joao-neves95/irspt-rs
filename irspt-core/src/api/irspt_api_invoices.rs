@@ -67,6 +67,21 @@ impl<'a> TIrsptApiInvoices<'a> for IrsptApi {
             .find_by_prop_value_async(
                 HtmlTagNames::SELECT,
                 HtmlPropertyNames::NAME,
+                InvoicePageNameValues::ATIVIDADE_EXERCIDA,
+            )
+            .await?
+            .select_option_by_prop_value_async(
+                "label",
+                // TODO: Add support for selecting on of the available values from the page (un-hardcode).
+                "ACTIVIDADES DE PROGRAMAÇÃO INFORMÁTICA",
+            )
+            .await?;
+
+        let _ = &self
+            .web_driver
+            .find_by_prop_value_async(
+                HtmlTagNames::SELECT,
+                HtmlPropertyNames::NAME,
                 InvoicePageNameValues::CLIENT_COUNTRY,
             )
             .await?

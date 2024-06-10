@@ -1,5 +1,4 @@
 pub struct IrsPtUrls {}
-
 impl IrsPtUrls {
     pub const LOGIN_PAGE: &'static str =
         "https://www.acesso.gov.pt/v2/loginForm?partID=PFAP&path=/geral/home";
@@ -9,11 +8,10 @@ impl IrsPtUrls {
 }
 
 pub struct HtmlTagNames {}
-
 impl HtmlTagNames {
     pub const SELECT: &'static str = "select";
 
-    pub const INPUT: &'static str = "select";
+    pub const INPUT: &'static str = "input";
 
     pub const TEXTAREA: &'static str = "textarea";
 
@@ -21,7 +19,6 @@ impl HtmlTagNames {
 }
 
 pub struct HtmlPropertyNames {}
-
 impl HtmlPropertyNames {
     pub const NAME: &'static str = "name";
 
@@ -29,11 +26,12 @@ impl HtmlPropertyNames {
 }
 
 pub struct InvoicePageNameValues {}
-
 impl InvoicePageNameValues {
     pub const SERVICE_DATE: &'static str = "dataPrestacao";
 
     pub const INVOICE_TYPE: &'static str = "tipoRecibo";
+
+    pub const ATIVIDADE_EXERCIDA: &'static str = "atividadePrestador";
 
     pub const CLIENT_COUNTRY: &'static str = "pais";
 
