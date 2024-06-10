@@ -1,8 +1,6 @@
 mod prompt;
 mod validators;
 
-use std::borrow::BorrowMut;
-
 use irspt_core::{
     infra::{InvoiceTemplateSledStore, SledDb},
     models::IssueInvoiceRequest,

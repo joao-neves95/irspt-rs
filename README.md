@@ -13,6 +13,8 @@ It's possible to create a template to automate the process of issuing an invoice
 This is for my own use, it's hardcoded for me, and it does not have many features. <br/>
 Maybe I'll make it generic in the future.
 
+`cargo run --release`
+
 ---
 
 ## Disclamer
