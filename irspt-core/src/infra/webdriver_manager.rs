@@ -17,7 +17,7 @@ impl TWebdriverManager for WebdriverManager {
         WebdriverManager { webdriver_type }
     }
 
-    fn start_instance_if_needed(&mut self) -> Result<InstanceState> {
+    fn start_instance_if_needed(&mut self, is_dev_mode: bool) -> Result<InstanceState> {
         let mut sys_info = System::new_with_specifics(
             RefreshKind::new().with_processes(ProcessRefreshKind::new()),
         );
@@ -35,7 +35,7 @@ impl TWebdriverManager for WebdriverManager {
             Some(_) => Ok(InstanceState::Running),
 
             None => match Command::new(webdriver_type_str)
-                .stdout(if cfg!(feature = "child-stdout-off") {
+                .stdout(if !is_dev_mode {
                     Stdio::null()
                 } else {
                     Stdio::inherit()
@@ -43,6 +43,7 @@ impl TWebdriverManager for WebdriverManager {
                 .spawn()
             {
                 Err(e) => Err(anyhow!(format!("{}{:#?}", run_driver_error_message, e))),
+
                 anyhow::Result::Ok(child) => Ok(InstanceState::Started(child)),
             },
         }
@@ -60,18 +61,21 @@ mod tests {
     #[test]
     fn is_geckodriver_running_passes() {
         let mut webdriver_client = WebdriverManager::new(WebdriverType::Gecko);
-        let final_state = webdriver_client.start_instance_if_needed();
+        let final_state_result = webdriver_client.start_instance_if_needed(false);
 
-        match final_state {
+        // Cleanup.
+        match final_state_result {
             Err(e) => panic!("{}", e),
 
             Ok(state) => match state {
+                // Do nothing if it was already running on the client machine.
+                InstanceState::Running => (),
+
                 InstanceState::Started(mut child_command) => {
                     assert!(child_command.id() > 0);
                     let _ = child_command.kill();
                 }
 
-                InstanceState::Running => (), // Nothing to do.
                 _ => panic!("The final child process state is invalid."),
             },
         };

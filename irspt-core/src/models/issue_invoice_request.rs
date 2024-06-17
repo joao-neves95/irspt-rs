@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 pub struct IssueInvoiceRequest {
+    pub is_dev_mode: bool,
     pub data: HashMap<String, String>,
     pub(crate) default_string_value: String,
 }
@@ -8,6 +9,7 @@ pub struct IssueInvoiceRequest {
 impl IssueInvoiceRequest {
     pub fn new(data: HashMap<String, String>) -> Self {
         IssueInvoiceRequest {
+            is_dev_mode: false,
             data,
             default_string_value: String::new(),
         }
@@ -15,73 +17,96 @@ impl IssueInvoiceRequest {
 
     pub fn new_empty() -> Self {
         IssueInvoiceRequest {
+            is_dev_mode: false,
             data: HashMap::new(),
             default_string_value: String::new(),
         }
+    }
+
+    pub fn set_is_dev_mode(&mut self, is: bool) -> &mut Self {
+        self.is_dev_mode = is;
+
+        self
     }
 
     pub fn get_date(&self) -> &String {
         get_model_data_value(self, "date")
     }
 
-    pub fn set_date(&mut self, value: String) {
+    pub fn set_date(&mut self, value: String) -> &Self {
         set_model_data_value(self, "date", value);
+
+        self
     }
 
     pub fn get_description(&self) -> &String {
         get_model_data_value(self, "description")
     }
 
-    pub fn set_description(&mut self, value: String) {
+    pub fn set_description(&mut self, value: String) -> &Self {
         set_model_data_value(self, "description", value);
+
+        self
     }
 
     pub fn get_client_country(&self) -> &String {
         get_model_data_value(&self, "client_country")
     }
 
-    pub fn set_client_country(&mut self, value: String) {
+    pub fn set_client_country(&mut self, value: String) -> &Self {
         set_model_data_value(self, "client_country", value);
+
+        self
     }
 
     pub fn get_client_nif(&self) -> &String {
         get_model_data_value(self, "client_nif")
     }
 
-    pub fn set_client_nif(&mut self, value: String) {
+    pub fn set_client_nif(&mut self, value: String) -> &Self {
         set_model_data_value(self, "client_nif", value);
+
+        self
     }
 
     pub fn get_client_name(&self) -> &String {
         get_model_data_value(self, "client_name")
     }
 
-    pub fn set_client_name(&mut self, value: String) {
+    pub fn set_client_name(&mut self, value: String) -> &Self {
         set_model_data_value(self, "client_name", value);
+
+        self
     }
 
     pub fn get_client_address(&self) -> &String {
         get_model_data_value(self, "client_address")
     }
 
-    pub fn set_client_address(&mut self, value: String) {
+    pub fn set_client_address(&mut self, value: String) -> &Self {
         set_model_data_value(self, "client_address", value);
+
+        self
     }
 
     pub fn get_value(&self) -> &String {
         get_model_data_value(self, "value")
     }
 
-    pub fn set_value(&mut self, value: String) {
+    pub fn set_value(&mut self, value: String) -> &Self {
         set_model_data_value(self, "value", value);
+
+        self
     }
 
     pub fn get_nif(&self) -> &String {
         get_model_data_value(self, "nif")
     }
 
-    pub fn set_nif(&mut self, value: String) {
+    pub fn set_nif(&mut self, value: String) -> &Self {
         set_model_data_value(self, "nif", value);
+
+        self
     }
 }
 

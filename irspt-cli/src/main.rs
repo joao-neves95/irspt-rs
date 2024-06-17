@@ -14,16 +14,17 @@ use inquire::{required, Confirm, Password, Text};
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    let is_dev_mode = cfg!(feature = "dev-mode");
+
     let mut sled_db = SledDb::new();
     let _ = sled_db.open();
 
     let invoice_template_store = InvoiceTemplateSledStore::new(&sled_db)?;
 
     let invoices_service_props = InvoicesServiceProps {
+        is_dev_mode: is_dev_mode,
         invoice_template_store: &invoice_template_store,
-        headless_webdriver: cfg!(feature = "headless-webdriver"),
     };
-
     let mut invoice_service = InvoicesService::new_async(&invoices_service_props).await?;
 
     let existing_model = match invoice_service.get_saved_template() {
@@ -49,7 +50,7 @@ async fn main() -> Result<()> {
     invoice_service.authenticate_async(&nif, &password).await?;
 
     let mut invoice_request = prompt_invoice_request(&existing_model)?;
-    invoice_request.set_nif(nif);
+    invoice_request.set_is_dev_mode(is_dev_mode).set_nif(nif);
 
     let save_template = Confirm::new("Save as template?")
         .with_default(false)
@@ -60,19 +61,16 @@ async fn main() -> Result<()> {
         invoice_service.update_saved_template(&invoice_request)?;
     }
 
-    #[cfg(feature = "issue-invoice")]
+    invoice_service
+        .issue_invoice_async(&invoice_request)
+        .await?;
+
+    #[cfg(feature = "final-timout")]
     {
-        invoice_service
-            .issue_invoice_async(&invoice_request)
-            .await?;
+        use core::time;
+        use std::thread;
 
-        #[cfg(feature = "issue-invoice-final-timout")]
-        {
-            use core::time;
-            use std::thread;
-
-            thread::sleep(time::Duration::from_secs(5));
-        }
+        thread::sleep(time::Duration::from_secs(5));
     }
 
     invoice_service.drop_async().await?;

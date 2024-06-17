@@ -1,4 +1,4 @@
-use super::{extensions::WebDriverExtensions, IrsptApi};
+use super::{constants::IrsPtUrls, extensions::WebDriverExtensions, IrsptApi};
 use crate::traits::TIrsptApiAuth;
 
 use std::{thread, time};
@@ -10,11 +10,7 @@ use thirtyfour::By;
 #[async_trait]
 impl TIrsptApiAuth for IrsptApi {
     async fn authenticate_async(&self, nif: &str, password: &str) -> Result<&Self> {
-        // TODO: Un-hardcode url.
-        self.web_driver
-            // .goto("https://www.acesso.gov.pt/v2/loginForm?partID=PFAP&path=/geral/dashboard")
-            .goto("https://www.acesso.gov.pt/v2/loginForm?partID=PFAP&path=/geral/home")
-            .await?;
+        self.web_driver.goto(IrsPtUrls::LOGIN_PAGE).await?;
 
         let _ = &self
             .web_driver
@@ -38,6 +34,8 @@ impl TIrsptApiAuth for IrsptApi {
             .await?
             .click()
             .await?;
+
+        // TODO: Check if the password is wrong.
 
         thread::sleep(time::Duration::from_secs(2));
 

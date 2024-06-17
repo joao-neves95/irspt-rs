@@ -15,7 +15,7 @@ use async_trait::async_trait;
 const DEFAULT_TEMPLATE_NAME: &str = "DEFAULT";
 
 pub struct InvoicesServiceProps<'a> {
-    pub headless_webdriver: bool,
+    pub is_dev_mode: bool,
     pub invoice_template_store: &'a InvoiceTemplateSledStore<'a>,
 }
 
@@ -34,9 +34,9 @@ impl<'a> TInvoicesService<'a> for InvoicesService<'a> {
         Ok(InvoicesService {
             invoice_template_store: Box::new(props.invoice_template_store),
 
-            webdriver_instance_state: WebdriverManager::new(WebdriverType::Gecko).start_instance_if_needed()?,
+            webdriver_instance_state: WebdriverManager::new(WebdriverType::Gecko).start_instance_if_needed(props.is_dev_mode)?,
 
-            irspt_api: IrsptApi::new( IrsptApiProps { headless: props.headless_webdriver }).await.context(
+            irspt_api: IrsptApi::new( IrsptApiProps { headless: !props.is_dev_mode }).await.context(
                 "ERROR: Issue while trying to connect to the WebDriver server. Make sure it's running.",
             )?,
         })
